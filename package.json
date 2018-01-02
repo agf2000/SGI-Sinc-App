@@ -1,0 +1,26 @@
+{
+	"name": "sgi-sync",
+	"version": "1.0.0",
+	"main": "main.js",
+	"author": "Giovanni <agf_2000@hotmail.com>",
+	"license": "MIT",
+	"scripts": {
+		"pack": "build --dir",
+		"dist": "build --win --ia32",
+		"start": "electron ."
+	},
+	"dependencies": {
+		"bootstrap": "^3.3.7",
+		"electron-json-storage": "^3.2.0",
+		"fs-extra": "^4.0.2",
+		"jquery": "^3.2.1",
+		"lodash": "^4.17.4",
+		"moment": "^2.19.1",
+		"mssql": "^4.1.0",
+		"nprogress": "^0.2.0"
+	},
+	"devDependencies": {
+		"electron": "^1.7.9",
+		"electron-builder": "^19.37.2"
+	}
+}
