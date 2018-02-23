@@ -1,9 +1,26 @@
 body {
-  margin: 5px;
+  margin: 10px;
   height: 100%;
 }
 
 textarea {
   width: 100%;
   height: 100vw;
+}
+
+.btn-div {
+  float: left;
+  margin-bottom: 10px;
+  margin-right: 10px;
+}
+
+.btn-div .btn {
+  height: 100px;
+  min-width: 235px;
+}
+
+#ulTiming {
+  height: 100px;
+  overflow: auto;
+  color: blue;
 }

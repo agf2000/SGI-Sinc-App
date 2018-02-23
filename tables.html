@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Tabelas SGI</title>
+    <link rel="stylesheet" href="./css/jquery.flipster.min.css">
+    <link rel="stylesheet" href="./css/materialize.min.css">
+    <link rel="stylesheet" href="./css/nprogress.css">
+    <link rel="stylesheet" href="./css/pnotify.custom.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata">
+    <!--Import your style sheets here-->
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+
+<body>
+
+    <div class="row">
+        <form>
+            <div class="row">
+                <div class="input-field col s12">
+                    <textarea id="textareaProducts" class="materialize-textarea"></textarea>
+                    <label for="textareaProducts">Tabelas de produtos separados por vírgula</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <textarea id="textareaPeople" class="materialize-textarea"></textarea>
+                    <label for="textareaPeople">Tabelas de pessoas separados por vírgula</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <textarea id="textareaItems" class="materialize-textarea"></textarea>
+                    <label for="textareaItems">Tabelas de entradas separados por vírgula</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <button id="btnSaveTables" class="btn waves-effect waves-light">Salvar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        var eRequire = require;
+        window.$ = window.jQuery = require('./js/libs/jquery.min.js');
+    </script>
+    <script src="./js/libs/hammer.min.js" onload="window.Hammer = module.exports;"></script>
+    <script src="./js/libs//nprogress.js"></script>
+    <script src="./js/libs/materialize.min.js"></script>
+    <script src="./js/libs/pnotify/pnotify.custom.min.js"></script>
+    <!--Import your js scripts here  -->
+    <script src="./js/tables.js"></script>
+
+</body>
+
+</html>

@@ -8,13 +8,20 @@ const {
     Menu
 } = electron;
 
-let mainWindow;
+let mainWindow = null;
+let serversWindow = null;
+let tablesWindow = null;
 
 // Listen for the app to be ready
 function createWindow() {
     mainWindow = new BrowserWindow({
-        x: 0,
-        y: 10
+        title: "Sincronizador / Replicador",
+        // x: 0,
+        // y: 10,
+        autoHideMenuBar: true,
+        minimizable: false,
+        resizable: false,
+        icon: path.join(__dirname, 'build/icon.ico')
     });
 
     mainWindow.loadURL(url.format({
@@ -29,29 +36,51 @@ function createWindow() {
     // Insert menu
     Menu.setApplicationMenu(mainMenu);
 
-    if (process.env.NODE_ENV !== 'production') {
-        mainWindow.webContents.openDevTools();
-    }
+    // if (process.env.NODE_ENV !== 'production') {
+    //     mainWindow.webContents.openDevTools();
+    // }
+
 };
 
 // Create menu template
 const mainMenuTemplate = [{
-    label: 'File',
-    submenu: [{
-            label: 'Recarregar',
-            accelerator: 'CmdOrCtrl+R',
-            click(item, focusedWindow) {
-                if (focusedWindow) focusedWindow.reload()
+        label: 'Aplicativo',
+        submenu: [{
+                label: 'Recarregar',
+                accelerator: 'CmdOrCtrl+R',
+                click(item, focusedWindow) {
+                    if (focusedWindow) focusedWindow.reload()
+                }
+            },
+            {
+                label: 'Configuração',
+                submenu: [{
+                        role: 'servers',
+                        label: 'Servidores',
+                        accelerator: process.platform === 'darwin' ? 'Command+S' : 'Ctrl+S',
+                        click(item, focusedWindow) {
+                            if (focusedWindow) openServersWindow();
+                        }
+                    },
+                    {
+                        role: 'tables',
+                        label: 'Tabelas',
+                        accelerator: process.platform === 'darwin' ? 'Command+T' : 'Ctrl+T',
+                        click(item, focusedWindow) {
+                            if (focusedWindow) openTablesWindow();
+                        }
+                    }
+                ]
             }
-        },
-        {
-            label: 'Sair',
-            click() {
-                app.quit();
-            }
+        ]
+    },
+    {
+        label: 'Sair',
+        click() {
+            app.quit();
         }
-    ]
-}];
+    }
+];
 
 // Listen for the app to be ready
 app.on('ready', createWindow);
@@ -85,3 +114,62 @@ if (process.env.NODE_ENV !== 'production') {
         }]
     })
 }
+
+function openServersWindow() {
+    if (serversWindow) {
+        serversWindow.focus()
+        return;
+    }
+
+    serversWindow = new BrowserWindow({
+        title: "Conexão com Servidores",
+        minimizable: false,
+        parent: mainWindow,
+        fullscreenable: false,
+        icon: path.join(__dirname, 'build/icon.ico')
+    });
+
+    serversWindow.setMenu(null);
+
+    serversWindow.loadURL('file://' + __dirname + '/servers.html');
+
+    serversWindow.on('closed', function () {
+        mainWindow.reload();
+        serversWindow = null;
+    });
+
+    // // Open developer tools if not in production
+    // if (process.env.NODE_ENV !== 'production') {
+    //     serversWindow.webContents.openDevTools();
+    // }
+};
+
+function openTablesWindow() {
+
+    if (tablesWindow) {
+        tablesWindow.focus()
+        return;
+    }
+
+    tablesWindow = new BrowserWindow({
+        title: "Tabelas",
+        minimizable: false,
+        parent: mainWindow,
+        fullscreenable: false,
+        icon: path.join(__dirname, 'build/icon.ico')
+    });
+
+    tablesWindow.setMenu(null);
+
+    tablesWindow.loadURL('file://' + __dirname + '/tables.html');
+
+    tablesWindow.on('closed', function () {
+        mainWindow.reload();
+        tablesWindow = null;
+    });
+
+    // // Open developer tools if not in production
+    // if (process.env.NODE_ENV !== 'production') {
+    //     tablesWindow.webContents.openDevTools();
+    // }
+};
