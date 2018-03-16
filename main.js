@@ -13,13 +13,14 @@ let serversWindow = null;
 let tablesWindow = null;
 
 // Listen for the app to be ready
+// vscode-fold=0
 function createWindow() {
     mainWindow = new BrowserWindow({
         title: "Sincronizador / Replicador",
-        // x: 0,
-        // y: 10,
+        x: 0,
+        y: 10,
         autoHideMenuBar: true,
-        minimizable: false,
+        // minimizable: false,
         resizable: false,
         icon: path.join(__dirname, 'build/icon.ico')
     });
@@ -36,26 +37,22 @@ function createWindow() {
     // Insert menu
     Menu.setApplicationMenu(mainMenu);
 
-    // if (process.env.NODE_ENV !== 'production') {
-    //     mainWindow.webContents.openDevTools();
-    // }
+    if (process.env.NODE_ENV !== 'production') {
+        mainWindow.webContents.openDevTools();
+    }
 
+    function openSyncsWindow() {
+        event.sender.send('openSyncsWindow');
+    };
 };
 
 // Create menu template
+// vscode-fold=1
 const mainMenuTemplate = [{
         label: 'Aplicativo',
         submenu: [{
-                label: 'Recarregar',
-                accelerator: 'CmdOrCtrl+R',
-                click(item, focusedWindow) {
-                    if (focusedWindow) focusedWindow.reload()
-                }
-            },
-            {
                 label: 'Configuração',
                 submenu: [{
-                        role: 'servers',
                         label: 'Servidores',
                         accelerator: process.platform === 'darwin' ? 'Command+S' : 'Ctrl+S',
                         click(item, focusedWindow) {
@@ -63,14 +60,28 @@ const mainMenuTemplate = [{
                         }
                     },
                     {
-                        role: 'tables',
                         label: 'Tabelas',
                         accelerator: process.platform === 'darwin' ? 'Command+T' : 'Ctrl+T',
                         click(item, focusedWindow) {
                             if (focusedWindow) openTablesWindow();
                         }
+                    },
+                    {
+                        label: 'Sincronização',
+                        accelerator: process.platform === 'darwin' ? 'Command+Y' : 'Ctrl+Y',
+                        click(item, focusedWindow) {
+                            if (focusedWindow)
+                                focusedWindow.webContents.send('openSyncsWindow');
+                        }
                     }
                 ]
+            },
+            {
+                label: 'Recarregar',
+                accelerator: 'CmdOrCtrl+R',
+                click(item, focusedWindow) {
+                    if (focusedWindow) focusedWindow.reload()
+                }
             }
         ]
     },
@@ -83,6 +94,7 @@ const mainMenuTemplate = [{
 ];
 
 // Listen for the app to be ready
+// vscode-fold=2
 app.on('ready', createWindow);
 
 app.on('window-all-closed', function () {
@@ -102,9 +114,10 @@ app.on('activate', function () {
 });
 
 // Open developer tools if not in production
+// vscode-fold=3
 if (process.env.NODE_ENV !== 'production') {
     mainMenuTemplate.push({
-        label: 'Developer Tools',
+        label: 'Ferramentas',
         submenu: [{
             label: 'Toggle Dev Tools',
             accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
@@ -115,6 +128,7 @@ if (process.env.NODE_ENV !== 'production') {
     })
 }
 
+// vscode-fold=4
 function openServersWindow() {
     if (serversWindow) {
         serversWindow.focus()
@@ -144,6 +158,7 @@ function openServersWindow() {
     // }
 };
 
+// vscode-fold=5
 function openTablesWindow() {
 
     if (tablesWindow) {

@@ -15,26 +15,19 @@ let destPath = os.tmpdir() + '\\tables';
 let dbOrigin = {};
 let dbDest = {};
 
-let stack_bottomright = {
-    "dir1": "down",
-    "dir2": "right",
-    "push": "top"
-};
-
 fse.readFile(`${destPath}\\dbOrigin.json`, function (err, data) {
     if (err) {
-        $('#btnBackup').removeClass('disabled');
         new PNotify({
             title: "Atenção",
-            text: "Configurações incompletas.<br />Favor configrar os servidores.<br />Aperte o ALT para ter acesso ao menu.",
+            text: "Favor configrar os servidores.<br />Aperte o ALT para ter acesso ao menu.",
             type: 'warning',
             icon: false,
-            addclass: "stack-bottomright",
-            stack: stack_bottomright,
-            delay: 6000
+            addclass: "stack-bottomright"
+            // stack: stack_bottomright
         });
         return console.log(err);
     }
+    $('#btnBackup').removeClass('disabled');
     let fileRead = fse.readFileSync(`${destPath}\\dbOrigin.json`, 'utf8');
     dbOrigin = JSON.parse(fileRead);
 });
@@ -89,7 +82,7 @@ fse.readFile(itemsFile, function (err, data) {
 
 $(function () {
 
-    $('#productsPasswordModal, #peoplePasswordModal, #itemsPasswordModal').modal();
+    $('#productsPasswordModal, #peoplePasswordModal, #itemsPasswordModal, #logModal, #syncsModal').modal();
 
     // console.log(os.tmpdir());
     fse.mkdirsSync(destPath);
@@ -97,7 +90,7 @@ $(function () {
     // console.log(destPath);
     storage.setDataPath(destPath);
 
-    // Click of the sinc button
+    // Backup click
     $('#btnBackup').click(function (e) {
         if (e.clientX === 0) {
             return false;
@@ -109,8 +102,14 @@ $(function () {
 
         NProgress.configure({
             minimum: 0.1,
-            trickleSpeed: 2000
+            speed: 2000,
+            trickleSpeed: 2000,
+            parent: '#barProgress'
         }).start();
+
+        $('#logModal').modal('open');
+        $('#logModal .modal-content h5').html('Backup!');
+        $('#btnOpenLog').removeClass('hide');
 
         let bkupChron = new Date();
 
@@ -121,11 +120,20 @@ $(function () {
         new sqlDb.ConnectionPool(dbDest).connect().then(pool => {
             return pool.request().query(bkupQuery)
         }).then(result => {
+            NProgress.done();
             sqlDb.close();
             $('#ulTiming').append(`<li>Cópia do banco de dados realizada com sucesso em ${n(dateDiff(bkupChron.getTime()).minute)}:${n(dateDiff(bkupChron.getTime()).second)}.</li>`);
-            $('#btnRepPeople').removeClass('disabled');
-            $('#btnRepProducts').removeClass('disabled');
-            NProgress.done();
+            $('#btnOpenProductsModal').removeClass('disabled');
+            $('#btnOpenPeopleModal').removeClass('disabled');
+            new PNotify({
+                title: "Sucesso!",
+                text: "banco de dados copiado.",
+                type: 'success',
+                icon: false,
+                addclass: "stack-bottomright",
+                // // stack: stack_bottomright,
+                delay: 6000
+            });
         }).catch(err => {
             console.log(err);
             new PNotify({
@@ -134,14 +142,14 @@ $(function () {
                 type: 'error',
                 icon: false,
                 addclass: "stack-bottomright",
-                stack: stack_bottomright,
+                // // stack: stack_bottomright,
                 delay: 6000
             });
             sqlDb.close();
         });
     });
 
-    // Click of the sync products button
+    // Replicate products click
     $('#btnRepProducts').click(function (e) {
         if (e.clientX === 0) {
             return false;
@@ -150,7 +158,7 @@ $(function () {
 
         let $btn = this;
 
-        if ($('#passwd').val() == 'sftk123') {
+        if ($('#productsPasswd').val() == 'sftk123') {
             RepProducts($btn);
         } else {
             new PNotify({
@@ -158,14 +166,38 @@ $(function () {
                 type: 'error',
                 icon: false,
                 addclass: "stack-bottomright",
-                stack: stack_bottomright,
+                // stack: stack_bottomright,
                 delay: 6000
             });
-            $('#passwd').val(null);
+            $('#productsPasswd').val(null);
         }
     });
 
-    // Click of the sinc button
+    // Sync products click
+    $('#btnSyncProducts').click(function (e) {
+        if (e.clientX === 0) {
+            return false;
+        }
+        e.preventDefault();
+
+        let $btn = this;
+
+        if ($('#productsPasswd').val() == 'sftk123') {
+            RepProducts($btn);
+        } else {
+            new PNotify({
+                title: "Senha inválida!",
+                type: 'error',
+                icon: false,
+                addclass: "stack-bottomright",
+                // stack: stack_bottomright,
+                delay: 6000
+            });
+            $('#productsPasswd').val(null);
+        }
+    });
+
+    // Replicate people click
     $('#btnRepPeople').click(function (e) {
         if (e.clientX === 0) {
             return false;
@@ -174,7 +206,7 @@ $(function () {
 
         let $btn = this;
 
-        if ($('#passwd').val() == 'sftk123') {
+        if ($('#peoplePasswd').val() == 'sftk123') {
             RepPeople($btn);
         } else {
             new PNotify({
@@ -182,10 +214,10 @@ $(function () {
                 type: 'error',
                 icon: false,
                 addclass: "stack-bottomright",
-                stack: stack_bottomright,
+                // stack: stack_bottomright,
                 delay: 6000
             });
-            $('#passwd').val(null);
+            $('#peoplePasswd').val(null);
         }
     });
 });
@@ -195,8 +227,15 @@ function RepPeople($btn) {
 
     NProgress.configure({
         minimum: 0.1,
-        trickleSpeed: 2000
+        speed: 2000,
+        trickleSpeed: 2000,
+        parent: '#barProgress'
     }).start();
+
+    $('#logModal .modal-content h5').html('Replicando Pessoas!');
+    $('#logModal').modal('open');
+    $('#btnOpenLog').removeClass('hide');
+    $('#peoplePasswordModal').modal('close');
 
     $("#ulTiming").empty();
     $('#ulTiming').append(`<li>Conectando ao servidor de origem ${(new Date()).toLocaleTimeString()}.</li>`);
@@ -214,7 +253,7 @@ function RepPeople($btn) {
             type: 'error',
             icon: false,
             addclass: "stack-bottomright",
-            stack: stack_bottomright,
+            // stack: stack_bottomright,
             delay: 6000
         });
         sqlDb.close();
@@ -226,8 +265,15 @@ function RepProducts($btn) {
 
     NProgress.configure({
         minimum: 0.1,
-        trickleSpeed: 2000
+        speed: 2000,
+        trickleSpeed: 2000,
+        parent: '#barProgress'
     }).start();
+
+    $('#logModal .modal-content h5').html('Replicando Produtos!');
+    $('#logModal').modal('open');
+    $('#btnOpenLog').removeClass('hide');
+    $('#productsPasswordModal').modal('close');
 
     $("#ulTiming").empty();
     $('#ulTiming').append(`<li>Conectando ao servidor de origem ${(new Date()).toLocaleTimeString()}.</li>`);
@@ -252,7 +298,7 @@ function RepProducts($btn) {
             type: 'error',
             icon: false,
             addclass: "stack-bottomright",
-            stack: stack_bottomright,
+            // stack: stack_bottomright,
             delay: 6000
         });
         sqlDb.close();
@@ -275,13 +321,13 @@ function getProducts(btn) {
                 if (dateDiff(starting.getTime()).minute >= 1) {
                     switch (dateDiff(starting.getTime()).minute) {
                         case 2:
-                            $('#ulTiming').append(`<li>Adiquerindo milhares de produtos. Aguarde...</li>`);
+                            $('#ulTiming').append(`<li>Adiquerindo milhares de dados de produtos. Aguarde...</li>`);
                             break;
                         case 3:
-                            $('#ulTiming').append(`<li>Transferência ainda em andamento. Aguarde...</li>`);
+                            $('#ulTiming').append(`<li>Transferência de dados de produto em andamento. Aguarde...</li>`);
                             break;
                         default:
-                            $('#ulTiming').append(`<li>Adiquerindo produtos em andamento. Aguarde...</li>`);
+                            $('#ulTiming').append(`<li>Adiquerindo dados de produtos em andamento. Aguarde...</li>`);
                             break;
                     }
                 }
@@ -294,20 +340,23 @@ function getProducts(btn) {
 
     // Iterating thru the list of productsTables
     _.forEach(productsTables, function (item, index) {
-        // switch (item) {
-        //     case 'custoproduto':
-        //     case 'entrada':
-        //     case 'entradaitens':
-        //     case 'produto':
-        //         sqlGet += `with cteresults1 as (select *, row_number() over (order by codigo) as rownum1 from view_${item}_sinc) select * into #temp1 from cteresults1 where rownum1 between 1 and 50000; alter table #temp1 drop column rownum1; select * from #temp1; drop table #temp1; `;
-        //         // sqlGet += `with cteresults2 as (select *, row_number() over (order by codigo) as rownum2 from view_${item}_sinc) select * into #temp2 from cteresults2 where rownum2 between 17001 and 34000; alter table #temp2 drop column rownum2; select * from #temp2; drop table #temp2; `;
-        //         // sqlGet += `with cteresults3 as (select *, row_number() over (order by codigo) as rownum3 from view_${item}_sinc) select * into #temp3 from cteresults3 where rownum3 between 34001 and 51000; alter table #temp3 drop column rownum3; select * from #temp3; drop table #temp3; `;
-        //         break;
-        //     default:
-        //         sqlGet += `select top 17000 * from view_${item}_sinc; `;
-        //         break;
-        // };
-        sqlGet += `select * from view_${item}_sinc; `;
+        if ($($btn).attr('value') == 'sync') {
+            switch (item) {
+                case 'custoproduto':
+                case 'produto':
+                    sqlget += 'select * into #temp_produto from produto; ';
+
+                    // sqlGet += `with cteresults1 as (select *, row_number() over (order by codigo) as rownum1 from view_${item}_sinc) select * into #temp1 from cteresults1 where rownum1 between 1 and 50000; alter table #temp1 drop column rownum1; select * from #temp1; drop table #temp1; `;
+                    // sqlGet += `with cteresults2 as (select *, row_number() over (order by codigo) as rownum2 from view_${item}_sinc) select * into #temp2 from cteresults2 where rownum2 between 17001 and 34000; alter table #temp2 drop column rownum2; select * from #temp2; drop table #temp2; `;
+                    // sqlGet += `with cteresults3 as (select *, row_number() over (order by codigo) as rownum3 from view_${item}_sinc) select * into #temp3 from cteresults3 where rownum3 between 34001 and 51000; alter table #temp3 drop column rownum3; select * from #temp3; drop table #temp3; `;
+                    break;
+                default:
+                    sqlGet += `select * from view_${item}_sinc; `;
+                    break;
+            };
+        } else {
+            sqlGet += `select * from view_${item}_sinc; `;
+        }
     });
 
     new sqlDb.ConnectionPool(dbOrigin).connect().then(pool => {
@@ -345,8 +394,6 @@ function getProducts(btn) {
                             counter = counter - 1;
                             if (counter == 0) {
                                 $('#ulTiming').append(`<li>Produtos adiquiridos em ${n(dateDiff(start.getTime()).minute)}:${n(dateDiff(start.getTime()).second)}.</li>`);
-                                done = true;
-                                NProgress.done();
                                 sqlDb.close();
                                 // importProducts(data.recordsets[index].columns);
                                 importProducts($btn);
@@ -380,7 +427,7 @@ function getProducts(btn) {
                 type: 'error',
                 icon: false,
                 addclass: "stack-bottomright",
-                stack: stack_bottomright,
+                // stack: stack_bottomright,
                 delay: 6000
             });
             sqlDb.close();
@@ -405,13 +452,13 @@ function importProducts(btn) {
             if (dateDiff(starting.getTime()).minute >= 1) {
                 switch (dateDiff(starting.getTime()).minute) {
                     case 2:
-                        $('#ulTiming').append(`<li>Importando milhares de dados. Aguarde...</li>`);
+                        $('#ulTiming').append(`<li>Replicando milhares de dados de pessoas. Aguarde...</li>`);
                         break;
                     case 3:
-                        $('#ulTiming').append(`<li>Importação ainda em andamento. Aguarde...</li>`);
+                        $('#ulTiming').append(`<li>Replicação de dados de pessoas em andamento. Aguarde...</li>`);
                         break;
                     default:
-                        $('#ulTiming').append(`<li>Importação de dados em andamento. Aguarde...</li>`);
+                        $('#ulTiming').append(`<li>Replicação de dados de pessoas em andamento. Aguarde...</li>`);
                         break;
                 }
             }
@@ -432,17 +479,15 @@ function importProducts(btn) {
         // let obj = JSON.parse(fse.readFileSync(`${destPath}\\${table}.json`, 'utf8'));
         // console.log(obj);
 
-        NProgress.configure({
-            minimum: 0.1,
-            trickleSpeed: 2000
-        }).start();
-
         let sqlInst = ''; // `set language portuguese; waitfor delay \'00:00:05\'; `;
 
         // sqlInst += `exec sp_msforeachtable 'alter table ? disable trigger all'; `
         // sqlInst += `exec sp_desabilitar_chaves; `;
         // sqlInst += `exec sp_msforeachtable 'ALTER TABLE ? DISABLE TRIGGER all'; `;
         // sqlInst += `exec sp_desabilitar_chaves; `;
+        if (table == 'produto' && $($btn).val() == 'sync') {
+            sqlInst += 'select codigo, preco, estoque into #temp from produto; ';
+        }
         sqlInst += `delete from ${table}; `;
         sqlInst += `if ((select objectproperty(object_id('${table}'), 'TableHasIdentity')) = 1)`;
         sqlInst += `set identity_insert ${table} on; `;
@@ -499,6 +544,9 @@ function importProducts(btn) {
 
                 sqlInst += `if ((select objectproperty(object_id('${table}'), 'TableHasIdentity')) = 1)`;
                 sqlInst += `set identity_insert ${table} off; `;
+                if (table == 'produto' && $($btn).val() == 'sync') {
+                    sqlInst += 'update produto set preco = t.preco, estoque = t.estoque from produto join #temp t on produto.codigo = t.codigo; ';
+                }
                 // sqlInst += `alter table ${table} nocheck constraint all; `;
                 // sqlInst += `alter table ${table} enable trigger all; `;
                 // sqlInst += `exec sp_msforeachtable 'ALTER TABLE ? ENABLE TRIGGER all'; `;
@@ -523,21 +571,23 @@ function importProducts(btn) {
 
                         if (counter == 0) {
 
-                            done = true;
-
                             sqlDb.connect(dbDest).then(pool => {
                                 pool.request().query("exec sp_msforeachtable 'ALTER TABLE ? ENABLE TRIGGER all'; exec sp_habilitar_chaves;").then(result => {
                                     // console.log(result);
                                     $('#ulTiming').append(`<li>Dados importados em ${n(dateDiff(start.getTime()).minute)}:${n(dateDiff(start.getTime()).second)}.</li>`);
+
                                     new PNotify({
                                         title: "Sucesso",
-                                        text: "Importação executada com sucesso.",
+                                        text: "Replicação executada com sucesso.",
                                         type: 'success',
                                         icon: false,
                                         addclass: "stack-bottomright",
-                                        stack: stack_bottomright,
+                                        // stack: stack_bottomright,
                                         delay: 6000
                                     });
+
+                                    done = true;
+                                    $('#btnOpenProductsModal').addClass('disabled');
                                     NProgress.done();
                                 }).catch(err => {
                                     console.log(err);
@@ -547,9 +597,10 @@ function importProducts(btn) {
                                         type: 'error',
                                         icon: false,
                                         addclass: "stack-bottomright",
-                                        stack: stack_bottomright,
+                                        // stack: stack_bottomright,
                                         delay: 6000
                                     });
+                                    NProgress.done();
                                 });
                             });
 
@@ -559,7 +610,6 @@ function importProducts(btn) {
                         console.log(err);
                         // $('#ulTiming').append(`<li>Erro: ${err} as ${moment(new Date()).format('HH:mm:ss')}.</li>`);
                         clearInterval(myVal);
-                        NProgress.done();
                         sqlDb.close();
 
                         new sqlDb.ConnectionPool(dbDest).connect().then(pool => {
@@ -572,10 +622,13 @@ function importProducts(btn) {
                                     type: 'error',
                                     icon: false,
                                     addclass: "stack-bottomright",
-                                    stack: stack_bottomright,
+                                    // stack: stack_bottomright,
                                     delay: 6000
                                 });
                                 sqlDb.close();
+                                $('#btnOpenProductsModal').addClass('disabled');
+                                NProgress.done();
+
                             }).catch(err => {
                                 console.log(err);
                                 new PNotify({
@@ -584,10 +637,11 @@ function importProducts(btn) {
                                     type: 'error',
                                     icon: false,
                                     addclass: "stack-bottomright",
-                                    stack: stack_bottomright,
+                                    // stack: stack_bottomright,
                                     delay: 6000
                                 });
                                 sqlDb.close();
+                                NProgress.done();
                             });
                         });
                     });
@@ -639,7 +693,7 @@ function getPeople(btn) {
     });
 
     new sqlDb.ConnectionPool(dbOrigin).connect().then(pool => {
-        $('#ulTiming').append(`<li>Adiquirindo dados ${moment(new Date()).format('HH:mm:ss')}.</li>`);
+        $('#ulTiming').append(`<li>Adiquirindo dados de pessoas ${moment(new Date()).format('HH:mm:ss')}.</li>`);
         // NProgress.configure({
         //     minimum: 0.1,
         //     trickleSpeed: 2000
@@ -671,9 +725,7 @@ function getPeople(btn) {
                             starting = new Date();
                             counter = counter - 1;
                             if (counter == 0) {
-                                $('#ulTiming').append(`<li>Dados adiquiridos em ${n(dateDiff(start.getTime()).minute)}:${n(dateDiff(start.getTime()).second)}.</li>`);
-                                done = true;
-                                NProgress.done();
+                                $('#ulTiming').append(`<li>Dados de pessoas adiquiridos em ${n(dateDiff(start.getTime()).minute)}:${n(dateDiff(start.getTime()).second)}.</li>`);
                                 sqlDb.close();
                                 importPeople($btn);
                             }
@@ -695,6 +747,7 @@ function getPeople(btn) {
             console.log(err);
             $('#ulTiming').append(`<li>Erro: ${err} as ${moment(new Date()).format('HH:mm:ss')}.</li>`);
             clearInterval(myVal);
+            done = true;
             NProgress.done();
             new PNotify({
                 title: "Erro",
@@ -702,7 +755,7 @@ function getPeople(btn) {
                 type: 'error',
                 icon: false,
                 addclass: "stack-bottomright",
-                stack: stack_bottomright,
+                // stack: stack_bottomright,
                 delay: 6000
             });
             sqlDb.close();
@@ -727,13 +780,13 @@ function importPeople(btn) {
             if (dateDiff(starting.getTime()).minute >= 1) {
                 switch (dateDiff(starting.getTime()).minute) {
                     case 2:
-                        $('#ulTiming').append(`<li>Importando milhares de dados. Aguarde...</li>`);
+                        $('#ulTiming').append(`<li>Replicando milhares de dados. Aguarde...</li>`);
                         break;
                     case 3:
-                        $('#ulTiming').append(`<li>Importação ainda em andamento. Aguarde...</li>`);
+                        $('#ulTiming').append(`<li>Replicação ainda em andamento. Aguarde...</li>`);
                         break;
                     default:
-                        $('#ulTiming').append(`<li>Importação de dados em andamento. Aguarde...</li>`);
+                        $('#ulTiming').append(`<li>Replicação de dados em andamento. Aguarde...</li>`);
                         break;
                 }
             }
@@ -746,11 +799,6 @@ function importPeople(btn) {
 
     // Iterating thru the list of peopleTables
     _.forEach(peopleTables, function (table, index) {
-
-        NProgress.configure({
-            minimum: 0.1,
-            trickleSpeed: 2000
-        }).start();
 
         let sqlInst = '';
         sqlInst += `delete from ${table}; `;
@@ -826,21 +874,23 @@ function importPeople(btn) {
 
                         if (counter == 0) {
 
-                            done = true;
-
                             sqlDb.connect(dbDest).then(pool => {
                                 pool.request().query("exec sp_msforeachtable 'ALTER TABLE ? ENABLE TRIGGER all'; exec sp_habilitar_chaves;").then(result => {
                                     // console.log(result);
                                     $('#ulTiming').append(`<li>Dados importados em ${n(dateDiff(start.getTime()).minute)}:${n(dateDiff(start.getTime()).second)}.</li>`);
+
                                     new PNotify({
                                         title: "Sucesso",
-                                        text: "Importação executada com sucesso.",
+                                        text: "Replicação executada com sucesso.",
                                         type: 'success',
                                         icon: false,
                                         addclass: "stack-bottomright",
-                                        stack: stack_bottomright,
+                                        // stack: stack_bottomright,
                                         delay: 6000
                                     });
+
+                                    done = true;
+                                    $('#btnOpenPeopleModal').addClass('disabled');
                                     NProgress.done();
                                 }).catch(err => {
                                     console.log(err);
@@ -850,7 +900,7 @@ function importPeople(btn) {
                                         type: 'error',
                                         icon: false,
                                         addclass: "stack-bottomright",
-                                        stack: stack_bottomright,
+                                        // stack: stack_bottomright,
                                         delay: 6000
                                     });
                                 });
@@ -862,7 +912,6 @@ function importPeople(btn) {
                         console.log(err);
                         // $('#ulTiming').append(`<li>Erro: ${err} as ${moment(new Date()).format('HH:mm:ss')}.</li>`);
                         clearInterval(myVal);
-                        NProgress.done();
                         sqlDb.close();
 
                         new sqlDb.ConnectionPool(dbDest).connect().then(pool => {
@@ -876,9 +925,11 @@ function importPeople(btn) {
                                     type: 'error',
                                     icon: false,
                                     addclass: "stack-bottomright",
-                                    stack: stack_bottomright,
+                                    // stack: stack_bottomright,
                                     delay: 6000
                                 });
+                                $('#btnOpenPeopleModal').addClass('disabled');
+                                NProgress.done();
                             }).catch(err => {
                                 console.log(err);
                                 new PNotify({
@@ -887,7 +938,7 @@ function importPeople(btn) {
                                     type: 'error',
                                     icon: false,
                                     addclass: "stack-bottomright",
-                                    stack: stack_bottomright,
+                                    // stack: stack_bottomright,
                                     delay: 6000
                                 });
                                 sqlDb.close();
@@ -900,7 +951,7 @@ function importPeople(btn) {
                             type: 'error',
                             icon: false,
                             addclass: "stack-bottomright",
-                            stack: stack_bottomright,
+                            // stack: stack_bottomright,
                             delay: 6000
                         });
                     });
@@ -911,7 +962,31 @@ function importPeople(btn) {
             }
         });
     });
+
+    $('#lblSyncStock').on('click', function (e) {
+        if (e.clientX === 0) {
+            return false;
+        }
+        e.preventDefault();
+
+        let chkBoxes = [];
+        $.each($('.syncBoxes'), function (ele) {
+            chkBoxes.push({
+                name: ele.name,
+                value: $(ele).prop('checked')
+            })
+        });
+
+        storage.set('params', chkBoxes, function (error) {
+            if (error)
+                throw error;
+        });
+    });
 };
+
+ipcRenderer.on('openSyncsWindow', function (event, args) {
+    $('#syncsModal').modal('open');
+});
 
 function dateDiff(timestamp) {
     var d = Math.abs(timestamp - new Date().getTime()) / 1000; // delta

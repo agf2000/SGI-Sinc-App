@@ -19,7 +19,7 @@
     <div>
         <h5>Backup</h5>
         <div class="btn-div">
-            <button id="btnBackup" class="btn light-blue lighten-1 waves-effect waves-light">
+            <button id="btnBackup" class="btn light-blue lighten-1 waves-effect waves-light disabled">
                 Backup Banco de Dados
             </button>
         </div>
@@ -28,17 +28,17 @@
     <div class="clearfix">
         <h5>Sincronizar</h5>
         <div class="btn-div">
-            <button id="btnSyncPeople" class="btn light-blue lighten-1 waves-effect waves-light disabled">
+            <button id="btnSyncPeople" class="btn light-blue lighten-1 waves-effect waves-light disabled" value="sync">
                 Sincronizar Pessoas
             </button>
         </div>
         <div class="btn-div">
-            <button id="btnSyncProducts" class="btn light-blue lighten-1 waves-effect waves-light disabled">
+            <button id="btnSyncProducts" class="btn light-blue lighten-1 waves-effect waves-light" value="sync">
                 Sincronizar Produtos
             </button>
         </div>
         <div class="btn-div">
-            <button id="btnSyncItems" class="btn light-blue lighten-1 waves-effect waves-light disabled">
+            <button id="btnSyncItems" class="btn light-blue lighten-1 waves-effect waves-light disabled" value="sync">
                 Sincronizar Entrada
             </button>
         </div>
@@ -47,30 +47,36 @@
     <div class="clearfix">
         <h5>Replicar</h5>
         <div class="btn-div">
-            <button class="btn waves-effect waves-light modal-trigger" data-target="peoplePasswordModal">
+            <button id="btnOpenPeopleModal" class="btn waves-effect waves-light modal-trigger" data-target="peoplePasswordModal">
                 Replicar Pessoas
             </button>
         </div>
         <div class="btn-div">
-            <button class="btn waves-effect waves-light modal-trigger disabled" data-target="productsPasswordModal">
+            <button id="btnOpenProductsModal" class="btn waves-effect waves-light modal-trigger" data-target="productsPasswordModal">
                 Replicar Produtos
             </button>
         </div>
         <div class="btn-div">
-            <button class="btn waves-effect waves-light modal-trigger disabled" data-target="itemsPasswordModal">
+            <button id="btnOpenItemsModal" class="btn waves-effect waves-light modal-trigger disabled" data-target="itemsPasswordModal">
                 Replicar Entrada
             </button>
         </div>
     </div>
 
-    <div class="barProgress"></div>
+    <button id="btnOpenLog" class="btn-floating waves-effect waves-light red modal-trigger top-right hide" data-target="logModal">
+        Log
+    </button>
 
-    <ul id="ulTiming" class="clearfix">
-    </ul>
+    <div class="footer">
+        <div class="left">©2018 - Todos direitos reservados</div>
+        <div class="right">Softek Automação Comercial (33) 3022-4885</div>
+        <div>Versão: 0.1.1</div>
+    </div>
 
+    <!-- People password modal -->
     <div class="modal" id="peoplePasswordModal">
         <div class="modal-content">
-            <h5>Digite a senha para replicar</h5>
+            <h5>Digite a senha para replicar pessoas</h5>
             <div class="row">
                 <div class="input-field">
 
@@ -80,7 +86,7 @@
 
                 </div>
                 <p>
-                    <button id="btnRepPeople" class="btn btn-primary">Prosseguir</button>
+                    <button id="btnRepPeople" class="btn btn-primary" value="rep">Prosseguir</button>
                 </p>
             </div>
         </div>
@@ -88,9 +94,12 @@
             <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Fechar</a>
         </div>
     </div>
+    <!-- /modal -->
+
+    <!-- Products password modal -->
     <div class="modal" id="productsPasswordModal">
         <div class="modal-content">
-            <h5>Digite a senha para replicar</h5>
+            <h5>Digite a senha para replicar produtos</h5>
             <div class="row">
                 <div class="input-field">
 
@@ -100,7 +109,7 @@
 
                 </div>
                 <p>
-                    <button id="btnRepProducts" class="btn btn-primary">Prosseguir</button>
+                    <button id="btnRepProducts" class="btn btn-primary" value="rep">Prosseguir</button>
                 </p>
             </div>
         </div>
@@ -108,9 +117,12 @@
             <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Fechar</a>
         </div>
     </div>
+    <!-- /modal -->
+
+    <!-- Items password modal -->
     <div class="modal" id="itemsPasswordModal">
         <div class="modal-content">
-            <h5>Digite a senha para replicar</h5>
+            <h5>Digite a senha para replicar entradas</h5>
             <div class="row">
                 <div class="input-field">
 
@@ -120,7 +132,7 @@
 
                 </div>
                 <p>
-                    <button id="btnRepItems" class="btn btn-primary">Prosseguir</button>
+                    <button id="btnRepItems" class="btn btn-primary" value="rep">Prosseguir</button>
                 </p>
             </div>
         </div>
@@ -128,6 +140,57 @@
             <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Fechar</a>
         </div>
     </div>
+    <!-- /Modal -->
+
+    <!-- Log Modal -->
+    <div class="modal" id="logModal">
+        <div class="modal-content">
+            <h5>Registro de eventos</h5>
+            <div class="row">
+                <div id="barProgress" role='bar'>
+                    <ul id="ulTiming" class="clearfix">
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Fechar</a>
+        </div>
+    </div>
+    <!-- /modal -->
+
+    <!-- Log Modal -->
+    <div class="modal" id="syncsModal">
+        <div class="modal-content">
+            <h5>Não sincronizar as seguinte informações:</h5>
+            <ul class="ulInline">
+                <li>
+                    <input type="checkbox" name="syncStock" id="syncStock" class="syncBoxes" />
+                    <label for="syncStock" id="lblSyncStock" onclick="javascript:alert('hello');">Estoque</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="syncPrice" name="syncPrice" class="syncBoxes" />
+                    <label for="syncPrice">Preço</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="syncCost" name="syncCost" class="syncBoxes" />
+                    <label for="syncCost">Custo</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="syncComission" name="syncComission" class="syncBoxes" />
+                    <label for="syncComission">Comissão</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="syncAtivo_pdv" name="syncAtivo_pdv" class="syncBoxes" />
+                    <label for="syncAtivo_pdv">Ativo p/ PDV</label>
+                </li>
+            </ul>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Fechar</a>
+        </div>
+    </div>
+    <!-- /.modal -->
 
     <script>
         var eRequire = require;

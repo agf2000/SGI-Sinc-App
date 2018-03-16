@@ -1,26 +1,52 @@
 body {
-  margin: 10px;
-  height: 100%;
+	margin: 10px;
+	height: 100%;
 }
 
 textarea {
-  width: 100%;
-  height: 100vw;
+	width: 100%;
+	height: 100vw;
 }
 
 .btn-div {
-  float: left;
-  margin-bottom: 10px;
-  margin-right: 10px;
+	float: left;
+	margin-bottom: 10px;
+	margin-right: 10px;
 }
 
 .btn-div .btn {
-  height: 100px;
-  min-width: 235px;
+	height: 100px;
+	min-width: 242px;
 }
 
 #ulTiming {
-  height: 100px;
-  overflow: auto;
-  color: blue;
+	color: blue;
+}
+
+.footer {
+	position: fixed;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	border-top: 2px solid #999;
+	background-color: rgb(201, 201, 201);
+	color: #555;
+	padding: 1px 5px;
+	font-family: 'Times New Roman', Times, serif;
+	text-align: center;
+}
+
+.top-right {
+	top: 10px;
+	right: 10px;
+	position: absolute;
+}
+
+ul.ulInline li label {
+	width: 30% !important;
+	color: #000 !important;
+}
+
+ul.ulInline li {
+	display: inline;
 }
