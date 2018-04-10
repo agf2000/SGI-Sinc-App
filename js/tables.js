@@ -5,18 +5,20 @@ const {
 const os = eRequire('os');
 const fse = eRequire('fs-extra');
 
-let destPath = os.tmpdir() + '\\tables';
+const storage = eRequire('electron-json-storage');
 
-let stack_bottomright = {
-    "dir1": "down",
-    "dir2": "right",
-    "push": "top"
-};
+let destPath = 'c:\\softer\\Sincronizador\\config';
+
+// let stack_bottomright = {
+//     "dir1": "down",
+//     "dir2": "right",
+//     "push": "top"
+// };
 
 $(function () {
 
-    // console.log(os.tmpdir());
-    fse.mkdirsSync(destPath);
+    // console.log(destPath);
+    storage.setDataPath(destPath);
 
     const peopleFile = `${destPath}\\people_table.txt`,
         productsFile = `${destPath}\\products_table.txt`,
@@ -35,7 +37,7 @@ $(function () {
 
     fse.readFile(productsFile, function (err, data) {
         if (err) {
-            fse.writeFileSync(productsFile, 'categoria,colecao,custoproduto,entrada,entradaitens,grades,grupo,gruposubgrupo,itens_grade,itens_grade_estoque,parametros_produto,produto,produtofornecedor,subgrupo', 'utf-8');
+            fse.writeFileSync(productsFile, 'categoria,colecao,custoproduto,grades,grupo,gruposubgrupo,itens_grade,itens_grade_estoque,parametros_produto,produto,produtofornecedor,subgrupo', 'utf-8');
             return console.log(err);
         }
         productsTableList = fse.readFileSync(productsFile, 'utf8');
@@ -46,6 +48,7 @@ $(function () {
 
     fse.readFile(itemsFile, function (err, data) {
         if (err) {
+            fse.writeFileSync(itemsFile, 'entrada,entradaitens', 'utf-8');
             return console.log(err);
         }
         itemsTableList = fse.readFileSync(itemsFile, 'utf8');
@@ -59,6 +62,9 @@ $(function () {
             return false;
         }
         e.preventDefault();
+
+        let $btn = $(this);
+        $($btn).attr('disabled', true);
 
         try {
             if ($('#textareaProducts').val())
@@ -75,10 +81,12 @@ $(function () {
                 text: "Dados armazenados.",
                 type: 'success',
                 icon: false,
-                addclass: "stack-bottomright",
-                stack: stack_bottomright
+                addclass: "stack-bottomright"
             });
+
+            $($btn).attr('disabled', false);
         } catch (e) {
+            $($btn).attr('disabled', false);
             alert('Failed to save the file !');
         }
     });

@@ -19,7 +19,7 @@
     <div>
         <h5>Backup</h5>
         <div class="btn-div">
-            <button id="btnBackup" class="btn light-blue lighten-1 waves-effect waves-light disabled">
+            <button id="btnBackup" class="btn red lighten-1 waves-effect waves-light">
                 Backup Banco de Dados
             </button>
         </div>
@@ -28,17 +28,17 @@
     <div class="clearfix">
         <h5>Sincronizar</h5>
         <div class="btn-div">
-            <button id="btnSyncPeople" class="btn light-blue lighten-1 waves-effect waves-light disabled" value="sync">
+            <button id="btnSyncPeople" class="btn light-blue lighten-1 waves-effect waves-light disabled">
                 Sincronizar Pessoas
             </button>
         </div>
         <div class="btn-div">
-            <button id="btnSyncProducts" class="btn light-blue lighten-1 waves-effect waves-light" value="sync">
+            <button id="btnSyncProducts" class="btn light-blue lighten-1 waves-effect waves-light disabled">
                 Sincronizar Produtos
             </button>
         </div>
         <div class="btn-div">
-            <button id="btnSyncItems" class="btn light-blue lighten-1 waves-effect waves-light disabled" value="sync">
+            <button id="btnSyncItems" class="btn light-blue lighten-1 waves-effect waves-light disabled">
                 Sincronizar Entrada
             </button>
         </div>
@@ -47,12 +47,12 @@
     <div class="clearfix">
         <h5>Replicar</h5>
         <div class="btn-div">
-            <button id="btnOpenPeopleModal" class="btn waves-effect waves-light modal-trigger" data-target="peoplePasswordModal">
+            <button id="btnOpenPeopleModal" class="btn waves-effect waves-light modal-trigger disabled" data-target="peoplePasswordModal">
                 Replicar Pessoas
             </button>
         </div>
         <div class="btn-div">
-            <button id="btnOpenProductsModal" class="btn waves-effect waves-light modal-trigger" data-target="productsPasswordModal">
+            <button id="btnOpenProductsModal" class="btn waves-effect waves-light modal-trigger disabled" data-target="productsPasswordModal">
                 Replicar Produtos
             </button>
         </div>
@@ -63,7 +63,7 @@
         </div>
     </div>
 
-    <button id="btnOpenLog" class="btn-floating waves-effect waves-light red modal-trigger top-right hide" data-target="logModal">
+    <button id="btnOpenLog" class="btn-floating waves-effect waves-light blue modal-trigger top-right hide" data-target="logModal">
         Log
     </button>
 
@@ -76,11 +76,11 @@
     <!-- People password modal -->
     <div class="modal" id="peoplePasswordModal">
         <div class="modal-content">
-            <h5>Digite a senha para replicar pessoas</h5>
+            <h5>Digite a senha para replicação de pessoas</h5>
             <div class="row">
                 <div class="input-field">
 
-                    <input id="peoplePasswd" type="password" class="span3 validate" name="peoplePasswd">
+                    <input id="peoplePasswd" type="password" class="span3 validate" name="peoplePasswd" value="sftk123">
                     <label for="peoplePasswd">
                         Esta ação requer autorização do administrador do sistema.</label>
 
@@ -99,11 +99,11 @@
     <!-- Products password modal -->
     <div class="modal" id="productsPasswordModal">
         <div class="modal-content">
-            <h5>Digite a senha para replicar produtos</h5>
+            <h5>Digite a senha para replicação de produtos</h5>
             <div class="row">
                 <div class="input-field">
 
-                    <input id="productsPasswd" type="password" class="span3 validate" name="productsPasswd">
+                    <input id="productsPasswd" type="password" class="span3 validate" name="productsPasswd" value="sftk123">
                     <label for="productsPasswd">
                         Esta ação requer autorização do administrador do sistema.</label>
 
@@ -122,11 +122,11 @@
     <!-- Items password modal -->
     <div class="modal" id="itemsPasswordModal">
         <div class="modal-content">
-            <h5>Digite a senha para replicar entradas</h5>
+            <h5>Digite a senha para replicação de entradas</h5>
             <div class="row">
                 <div class="input-field">
 
-                    <input id="itemsPasswd" type="password" class="span3 validate" name="itemsPasswd">
+                    <input id="itemsPasswd" type="password" class="span3 validate" name="itemsPasswd" value="sftk123">
                     <label for="itemsPasswd">
                         Esta ação requer autorização do administrador do sistema.</label>
 
@@ -162,27 +162,27 @@
     <!-- Log Modal -->
     <div class="modal" id="syncsModal">
         <div class="modal-content">
-            <h5>Não sincronizar as seguinte informações:</h5>
+            <h5>"Não" sincronizar as seguinte informações:</h5>
             <ul class="ulInline">
                 <li>
-                    <input type="checkbox" name="syncStock" id="syncStock" class="syncBoxes" />
-                    <label for="syncStock" id="lblSyncStock" onclick="javascript:alert('hello');">Estoque</label>
+                    <input type="checkbox" name="syncStock" id="syncStock" class="syncBoxes" checked />
+                    <label for="syncStock" onclick="javascript:syncSettings();">Estoque</label>
                 </li>
                 <li>
-                    <input type="checkbox" id="syncPrice" name="syncPrice" class="syncBoxes" />
-                    <label for="syncPrice">Preço</label>
+                    <input type="checkbox" id="syncPrice" name="syncPrice" class="syncBoxes" checked />
+                    <label for="syncPrice" onclick="javascript:syncSettings();">Preço</label>
                 </li>
                 <li>
-                    <input type="checkbox" id="syncCost" name="syncCost" class="syncBoxes" />
-                    <label for="syncCost">Custo</label>
+                    <input type="checkbox" id="syncCost" name="syncCost" class="syncBoxes" checked />
+                    <label for="syncCost" onclick="javascript:syncSettings();">Custo</label>
                 </li>
                 <li>
-                    <input type="checkbox" id="syncComission" name="syncComission" class="syncBoxes" />
-                    <label for="syncComission">Comissão</label>
+                    <input type="checkbox" id="syncComission" name="syncComission" class="syncBoxes" checked />
+                    <label for="syncComission" onclick="javascript:syncSettings();">Comissão</label>
                 </li>
                 <li>
-                    <input type="checkbox" id="syncAtivo_pdv" name="syncAtivo_pdv" class="syncBoxes" />
-                    <label for="syncAtivo_pdv">Ativo p/ PDV</label>
+                    <input type="checkbox" id="syncActive" name="syncActive" class="syncBoxes" checked />
+                    <label for="syncActive" onclick="javascript:syncSettings();">Ativo</label>
                 </li>
             </ul>
         </div>

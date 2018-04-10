@@ -152,7 +152,7 @@ function openServersWindow() {
         serversWindow = null;
     });
 
-    // // Open developer tools if not in production
+    // Open developer tools if not in production
     // if (process.env.NODE_ENV !== 'production') {
     //     serversWindow.webContents.openDevTools();
     // }
@@ -183,7 +183,7 @@ function openTablesWindow() {
         tablesWindow = null;
     });
 
-    // // Open developer tools if not in production
+    // Open developer tools if not in production
     // if (process.env.NODE_ENV !== 'production') {
     //     tablesWindow.webContents.openDevTools();
     // }

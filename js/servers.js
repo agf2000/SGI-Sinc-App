@@ -10,15 +10,15 @@ const sqlDb = eRequire("mssql");
 
 const storage = eRequire('electron-json-storage');
 
-let destPath = os.tmpdir() + '\\tables';
+let destPath = 'c:\\softer\\Sincronizador\\config';
 
 let connOrigin = `${destPath}\\dbOrigin.json`;
 
-let stack_bottomright = {
-    "dir1": "down",
-    "dir2": "right",
-    "push": "top"
-};
+// let stack_bottomright = {
+//     "dir1": "down",
+//     "dir2": "right",
+//     "push": "top"
+// };
 
 fse.readFile(connOrigin, function (err, data) {
     if (err) {
@@ -50,9 +50,6 @@ fse.readFile(connDest, function (err, data) {
 
 $(function () {
 
-    // console.log(os.tmpdir());
-    fse.mkdirsSync(destPath);
-
     // console.log(destPath);
     storage.setDataPath(destPath);
 
@@ -62,7 +59,8 @@ $(function () {
         }
         e.preventDefault();
 
-        let $this = $(this);
+        let $btn = $(this);
+        $($btn).attr('disabled', true);
 
         let params = {
             user: $('#userOrigin').val(),
@@ -82,6 +80,14 @@ $(function () {
 
             if (err) {
                 console.log(err);
+                new PNotify({
+                    title: "Erro",
+                    text: err,
+                    type: 'error',
+                    icon: false,
+                    addclass: "stack-bottomright"
+                });
+                $($btn).attr('disabled', false);
                 return;
             };
 
@@ -97,11 +103,10 @@ $(function () {
                 text: "Banco de dados de origem conectado.",
                 type: 'success',
                 icon: false,
-                addclass: "stack-bottomright",
-                stack: stack_bottomright
+                addclass: "stack-bottomright"
             });
 
-            $this.prop('disabled', false);
+            $btn.prop('disabled', false);
         });
     });
 
@@ -111,7 +116,8 @@ $(function () {
         }
         e.preventDefault();
 
-        let $this = $(this);
+        let $btn = $(this);
+        $($btn).attr('disabled', true);
 
         let params = {
             user: $('#userDest').val(),
@@ -131,6 +137,14 @@ $(function () {
 
             if (err) {
                 console.log(err);
+                new PNotify({
+                    title: "Erro",
+                    text: err,
+                    type: 'error',
+                    icon: false,
+                    addclass: "stack-bottomright"
+                });
+                $($btn).attr('disabled', false);
                 return;
             };
 
@@ -146,11 +160,10 @@ $(function () {
                 text: "Banco de dados de destino conectado.",
                 type: 'success',
                 icon: false,
-                addclass: "stack-bottomright",
-                stack: stack_bottomright
+                addclass: "stack-bottomright"
             });
 
-            $this.prop('disabled', false);
+            $btn.prop('disabled', false);
         });
     });
 });

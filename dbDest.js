@@ -1,6 +1,6 @@
 const os = eRequire('os');
 
-let destPath = os.tmpdir() + '\\tables';
+let destPath = 'c:\\softer\\Sincronizador';
 
 let dbDest = {};
 let dbConfig = {};
