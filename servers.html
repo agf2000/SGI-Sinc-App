@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Conexão com Servidores SGI</title>
+    <title>SGI Sincronizador :: Conexão com Servidores</title>
     <link rel="stylesheet" href="./css/jquery.flipster.min.css">
     <link rel="stylesheet" href="./css/materialize.min.css">
     <link rel="stylesheet" href="./css/nprogress.css">
@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="./css/styles.css">
 </head>
 
-<body>
+<body style="background: none !important;">
 
     <div class="row">
         <form>
@@ -25,6 +25,12 @@
                     <div class="input-field">
                         <input id="serverOrigin" type="text" class="validate">
                         <label for="serverOrigin">Servidor ex.: 127.0.0.1\sqlexpress</label>
+                    </div>
+                </div>
+                <div class="row hide">
+                    <div class="input-field">
+                        <input id="portOrigin" type="text" class="validate">
+                        <label for="portOrigin">Porta ex.: 1433</label>
                     </div>
                 </div>
                 <div class="row">
@@ -51,8 +57,14 @@
                 <h5>Servidor de Destino</h5>
                 <div class="row">
                     <div class="input-field">
-                        <input id="serverDest" type="text" class="validate">
+                        <input id="serverDest" type="text" class="validate" value="1433">
                         <label for="serverDest">Servidor ex.: 127.0.0.1\sqlexpress</label>
+                    </div>
+                </div>
+                <div class="row hide">
+                    <div class="input-field">
+                        <input id="portDest" type="text" class="validate" value="1433">
+                        <label for="portDest">Porta ex.: 1433</label>
                     </div>
                 </div>
                 <div class="row">

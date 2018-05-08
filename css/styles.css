@@ -1,11 +1,160 @@
+/*
+ * The MIT License
+ *
+ * Copyright (c) 2016 Juan Cruz Viotti. https://github.com/jviotti
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+/*
+ * Make all text the same line height.
+ *
+ * Different line heights make sense in the context
+ * of presenting a document in the web, but not when
+ * building desktop applications.
+ */
+
 body {
-	margin: 10px;
-	height: 100%;
+	background: url("../img/background2.jpg") no-repeat top right fixed;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
 }
 
-textarea {
+/*
+ * Enable font anti-aliasing
+ * See http://maxvoltar.com/archive/-webkit-font-smoothing
+ */
+
+html {
+	-webkit-font-smoothing: antialiased;
+}
+
+/*
+ * Make the whole application a vertical flexbox container
+ *
+ * This allows the content to extend its height to
+ * the remaining space.
+ */
+
+body {
+	display: flex;
+	flex-direction: column;
+}
+
+/*
+ * Prevent WebView bouncing in OS X
+ *
+ * This disables rubber-band scrolling on the
+ * main container for a more native feeling.
+ *
+ * See https://github.com/MacGapProject/MacGap2/issues/19#issuecomment-45764091
+ */
+
+html,
+body {
+	/*
+   * Prevent application wide scrolling
+   */
+	overflow: auto;
+	height: 100%;
 	width: 100%;
-	height: 100vw;
+}
+
+body {
+	-webkit-overflow-scrolling: touch;
+}
+
+/*
+ * Apply a natural box layout model to all elements,
+ * but allowing components to change
+ *
+ * See http://www.paulirish.com/2012/box-sizing-border-box-ftw/
+ */
+
+html {
+	box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+	box-sizing: inherit;
+}
+
+/*
+ * Disable arbitrary text selection
+ *
+ * Desktop applications don't allow users to select
+ * all text from the application, like from buttons.
+ */
+
+::selection:not(textarea):not(input) {
+	background-color: transparent;
+}
+
+html,
+body {
+	user-select: none;
+	tap-highlight-color: transparent;
+}
+
+/*
+ * Disable blue borders around certain elements on focus
+ */
+
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: none;
+}
+
+/*
+ * In desktop applications, textareas don't resize by themselves.
+ * They expand to the size of the parent container and resize with it.
+ */
+
+textarea {
+	resize: none;
+}
+
+.h5Mod h5 {
+	font-size: 1.44em;
+}
+
+h5 {
+	margin: 0 !important;
+	padding: 1px !important;
+}
+
+blockquote {
+	padding-left: 0.5rem !important;
+}
+
+blockquote.mybq {
+	border-left: 5px solid #42A5F5 !important;
+}
+
+blockquote.mybq2 {
+	border-left: 5px solid teal !important;
 }
 
 .btn-div {
@@ -30,8 +179,8 @@ textarea {
 	width: 100%;
 	border-top: 2px solid #999;
 	background-color: rgb(201, 201, 201);
-	color: #555;
-	padding: 1px 5px;
+	color: #222;
+	padding: 3px 5px;
 	font-family: 'Times New Roman', Times, serif;
 	text-align: center;
 }
@@ -49,4 +198,17 @@ ul.ulInline li label {
 
 ul.ulInline li {
 	display: inline;
+}
+
+/* Tooltip text */
+
+.ui-pnotify-container {
+	bottom: 25px;
+	right: 25px;
+	height: auto;
+}
+
+.ui-pnotify.tooltip .ui-pnotify-container {
+	background-color: #292929 !important;
+	color: #fff;
 }

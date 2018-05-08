@@ -1,6 +1,7 @@
 const electron = require('electron');
 const url = require('url');
 const path = require('path');
+const devToolsInstaller = require('electron-devtools-installer');
 
 const {
     app,
@@ -8,19 +9,25 @@ const {
     Menu
 } = electron;
 
-let mainWindow = null;
-let serversWindow = null;
-let tablesWindow = null;
+let mainWindow = null,
+    serversWindow = null,
+    tablesWindow = null,
+    syncsWindow = null;
 
 // Listen for the app to be ready
 // vscode-fold=0
 function createWindow() {
+
+    devToolsInstaller.default(devToolsInstaller.REDUX_DEVTOOLS);
+
     mainWindow = new BrowserWindow({
-        title: "Sincronizador / Replicador",
-        x: 0,
-        y: 10,
-        autoHideMenuBar: true,
+        title: "SGI Sincronizador",
+        // x: 0,
+        // y: 10,
+        // autoHideMenuBar: true,
         // minimizable: false,
+        width: 800,
+        height: 620,
         resizable: false,
         icon: path.join(__dirname, 'build/icon.ico')
     });
@@ -37,13 +44,15 @@ function createWindow() {
     // Insert menu
     Menu.setApplicationMenu(mainMenu);
 
-    if (process.env.NODE_ENV !== 'production') {
-        mainWindow.webContents.openDevTools();
-    }
+    // if (process.env.NODE_ENV !== 'production') {
+    //     mainWindow.webContents.openDevTools({
+    // mode: 'detach'
+    // });
+    // }
 
-    function openSyncsWindow() {
-        event.sender.send('openSyncsWindow');
-    };
+    // function openSyncsWindow() {
+    //     event.sender.send('openSyncsWindow');
+    // };
 };
 
 // Create menu template
@@ -67,11 +76,11 @@ const mainMenuTemplate = [{
                         }
                     },
                     {
-                        label: 'Sincronização',
+                        label: 'Exceções',
                         accelerator: process.platform === 'darwin' ? 'Command+Y' : 'Ctrl+Y',
                         click(item, focusedWindow) {
-                            if (focusedWindow)
-                                focusedWindow.webContents.send('openSyncsWindow');
+                            if (focusedWindow) openSyncsWindow();
+                            // focusedWindow.webContents.send('openSyncsWindow');
                         }
                     }
                 ]
@@ -84,6 +93,15 @@ const mainMenuTemplate = [{
                 }
             }
         ]
+    }, {
+        label: 'Ferramentas',
+        submenu: [{
+            label: 'Diagnóstico',
+            accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
+            click(item, focusedWindow) {
+                if (focusedWindow) focusedWindow.webContents.toggleDevTools()
+            }
+        }]
     },
     {
         label: 'Sair',
@@ -115,20 +133,47 @@ app.on('activate', function () {
 
 // Open developer tools if not in production
 // vscode-fold=3
-if (process.env.NODE_ENV !== 'production') {
-    mainMenuTemplate.push({
+// if (process.env.NODE_ENV !== 'production') {
+//     mainMenuTemplate.push({
+//         label: 'Ferramentas',
+//         submenu: [{
+//             label: 'Toggle Dev Tools',
+//             accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
+//             click(item, focusedWindow) {
+//                 if (focusedWindow) focusedWindow.webContents.toggleDevTools()
+//             }
+//         }]
+//     })
+// }
+
+// Create menu template
+// vscode-fold=4
+const serverMenuTemplate = [{
+        label: 'Recarregar',
+        accelerator: 'CmdOrCtrl+R',
+        click(item, focusedWindow) {
+            if (focusedWindow) focusedWindow.reload()
+        }
+    }, {
         label: 'Ferramentas',
         submenu: [{
-            label: 'Toggle Dev Tools',
+            label: 'Diagnóstico',
             accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
             click(item, focusedWindow) {
                 if (focusedWindow) focusedWindow.webContents.toggleDevTools()
             }
         }]
-    })
-}
+    },
+    {
+        label: 'Fechar',
+        click(item, focusedWindow) {
+            if (focusedWindow) focusedWindow.close()
+        }
 
-// vscode-fold=4
+    }
+];
+
+// vscode-fold=5
 function openServersWindow() {
     if (serversWindow) {
         serversWindow.focus()
@@ -140,6 +185,9 @@ function openServersWindow() {
         minimizable: false,
         parent: mainWindow,
         fullscreenable: false,
+        width: 760,
+        height: 480,
+        // autoHideMenuBar: true,
         icon: path.join(__dirname, 'build/icon.ico')
     });
 
@@ -147,18 +195,51 @@ function openServersWindow() {
 
     serversWindow.loadURL('file://' + __dirname + '/servers.html');
 
+    const serverMenu = Menu.buildFromTemplate(serverMenuTemplate);
+
+    // // Insert menu
+    serversWindow.setMenu(serverMenu);
+
     serversWindow.on('closed', function () {
-        mainWindow.reload();
+        // mainWindow.reload();
         serversWindow = null;
     });
 
     // Open developer tools if not in production
     // if (process.env.NODE_ENV !== 'production') {
-    //     serversWindow.webContents.openDevTools();
+    //     serversWindow.webContents.openDevTools({
+    // mode: 'detach'
+    // });
     // }
 };
 
-// vscode-fold=5
+// Create menu template
+// vscode-fold=6
+const tableMenuTemplate = [{
+        label: 'Recarregar',
+        accelerator: 'CmdOrCtrl+R',
+        click(item, focusedWindow) {
+            if (focusedWindow) focusedWindow.reload()
+        }
+    }, {
+        label: 'Ferramentas',
+        submenu: [{
+            label: 'Diagnóstico',
+            accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
+            click(item, focusedWindow) {
+                if (focusedWindow) focusedWindow.webContents.toggleDevTools()
+            }
+        }]
+    },
+    {
+        label: 'Fechar',
+        click(item, focusedWindow) {
+            if (focusedWindow) focusedWindow.close()
+        }
+    }
+];
+
+// vscode-fold=6
 function openTablesWindow() {
 
     if (tablesWindow) {
@@ -171,6 +252,9 @@ function openTablesWindow() {
         minimizable: false,
         parent: mainWindow,
         fullscreenable: false,
+        width: 740,
+        height: 560,
+        // autoHideMenuBar: true,
         icon: path.join(__dirname, 'build/icon.ico')
     });
 
@@ -178,13 +262,85 @@ function openTablesWindow() {
 
     tablesWindow.loadURL('file://' + __dirname + '/tables.html');
 
+    const tableMenu = Menu.buildFromTemplate(tableMenuTemplate);
+
+    // // Insert menu
+    tablesWindow.setMenu(tableMenu);
+
     tablesWindow.on('closed', function () {
-        mainWindow.reload();
+        // mainWindow.reload();
         tablesWindow = null;
     });
 
     // Open developer tools if not in production
     // if (process.env.NODE_ENV !== 'production') {
     //     tablesWindow.webContents.openDevTools();
+    // }
+};
+
+// Create menu template
+// vscode-fold=7
+const syncsMenuTemplate = [{
+        label: 'Recarregar',
+        accelerator: 'CmdOrCtrl+R',
+        click(item, focusedWindow) {
+            if (focusedWindow) focusedWindow.reload()
+        }
+    }, {
+        label: 'Ferramentas',
+        submenu: [{
+            label: 'Diagnóstico',
+            accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
+            click(item, focusedWindow) {
+                if (focusedWindow) focusedWindow.webContents.toggleDevTools()
+            }
+        }]
+    },
+    {
+        label: 'Fechar',
+        click(item, focusedWindow) {
+            if (focusedWindow) focusedWindow.close()
+        }
+    }
+];
+
+// vscode-fold=8
+function openSyncsWindow() {
+
+    if (syncsWindow) {
+        syncsWindow.focus()
+        return;
+    }
+
+    syncsWindow = new BrowserWindow({
+        title: "Exceções",
+        minimizable: false,
+        parent: mainWindow,
+        fullscreenable: false,
+        width: 660,
+        height: 480,
+        // autoHideMenuBar: true,
+        icon: path.join(__dirname, 'build/icon.ico')
+    });
+
+    syncsWindow.setMenu(null);
+
+    syncsWindow.loadURL('file://' + __dirname + '/syncs.html');
+
+    const syncsMenu = Menu.buildFromTemplate(syncsMenuTemplate);
+
+    // // Insert menu
+    syncsWindow.setMenu(syncsMenu);
+
+    syncsWindow.on('closed', function () {
+        // mainWindow.reload();
+        syncsWindow = null;
+    });
+
+    // Open developer tools if not in production
+    // if (process.env.NODE_ENV !== 'production') {
+    //     syncsWindow.webContents.openDevTools({
+    //         mode: 'detach'
+    //     });
     // }
 };

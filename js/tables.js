@@ -17,6 +17,8 @@ let destPath = 'c:\\softer\\Sincronizador\\config';
 
 $(function () {
 
+    $('#passwordModal').modal();
+
     // console.log(destPath);
     storage.setDataPath(destPath);
 
@@ -26,7 +28,7 @@ $(function () {
 
     fse.readFile(peopleFile, function (err, data) {
         if (err) {
-            fse.writeFileSync(peopleFile, 'bairro,categoria,cep,cidade,classes,clicobranca,colecao,condicaopagto,contatos,convenio,creditocliente,estado,financeira,fisica,juridica,logradouro,meios_pagto,obscliente,operadora,pessoas,profissoes,regioes,spc,spcparcelas,telefone,tipocobranca,tipocredito,tipologradouro,tipopessoa,tiporeferencia,tipospagamentos,tipotelefone', 'utf-8');
+            fse.writeFileSync(peopleFile, 'bairro,cadpais,cep,cidade,estado,financeira,fisica,logradouro,obscliente,pessoas,pessoatipocobranca,profissoes,regioes,telefone,tipologradouro,tipopessoa,tipotelefone', 'utf-8');
             return console.log(err);
         }
         peopleTableList = fse.readFileSync(peopleFile, 'utf8');
@@ -63,32 +65,51 @@ $(function () {
         }
         e.preventDefault();
 
-        let $btn = $(this);
-        $($btn).attr('disabled', true);
+        $('#passwordModal').modal('close');
 
-        try {
-            if ($('#textareaProducts').val())
-                fse.writeFileSync(productsFile, $('#textareaProducts').val(), 'utf-8');
+        if ($('#passwd').val() == 'sftk123') {
+            try {
+                if ($('#textareaProducts').val())
+                    fse.writeFileSync(productsFile, $('#textareaProducts').val(), 'utf-8');
 
-            if ($('#textareaPeople').val())
-                fse.writeFileSync(peopleFile, $('#textareaPeople').val(), 'utf-8');
+                if ($('#textareaPeople').val())
+                    fse.writeFileSync(peopleFile, $('#textareaPeople').val(), 'utf-8');
 
-            if ($('#textareaItems').val())
-                fse.writeFileSync(itemsFile, $('#textareaItems').val(), 'utf-8');
+                if ($('#textareaItems').val())
+                    fse.writeFileSync(itemsFile, $('#textareaItems').val(), 'utf-8');
 
+                new PNotify({
+                    title: "Sucesso",
+                    text: "Dados armazenados. Lembre de recarregar a tela principal.",
+                    type: 'success',
+                    icon: false,
+                    addclass: "stack-bottomright"
+                });
+
+            } catch (e) {
+                alert('Falha ao salvar as informações !');
+            }
+        } else {
             new PNotify({
-                title: "Sucesso",
-                text: "Dados armazenados.",
-                type: 'success',
+                title: "Senha inválida!",
+                type: 'error',
                 icon: false,
-                addclass: "stack-bottomright"
+                addclass: "stack-bottomright",
+                delay: 6000
             });
-
-            $($btn).attr('disabled', false);
-        } catch (e) {
-            $($btn).attr('disabled', false);
-            alert('Failed to save the file !');
         }
+
+        $('#passwd').val(null);
+    });
+
+    $('#btnCloseTables').click(function (e) {
+        if (e.clientX === 0) {
+            return false;
+        }
+        e.preventDefault();
+
+        var window = remote.getCurrentWindow();
+        window.close();
     });
 
 });

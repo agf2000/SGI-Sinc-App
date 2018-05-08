@@ -19,7 +19,7 @@ function readDestConfigFile() {
             password: dbDest.password,
             server: dbDest.server,
             database: dbDest.database,
-            port: 1433,
+            port: dbDest.port,
             connectionTimeout: 500000,
             requestTimeout: 500000,
             pool: {

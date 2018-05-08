@@ -27,6 +27,7 @@ fse.readFile(connOrigin, function (err, data) {
     let dbOrigin = fse.readFileSync(connOrigin, 'utf8');
     dbOrigin = JSON.parse(dbOrigin);
     $('#serverOrigin').val(dbOrigin.server);
+    $('#portOrigin').val(dbOrigin.port);
     $('#dbOrigin').val(dbOrigin.database);
     $('#userOrigin').val(dbOrigin.user);
     $('#passwordOrigin').val(dbOrigin.password);
@@ -42,6 +43,7 @@ fse.readFile(connDest, function (err, data) {
     let dbDest = fse.readFileSync(connDest, 'utf8');
     dbDest = JSON.parse(dbDest);
     $('#serverDest').val(dbDest.server);
+    $('#portDest').val(dbDest.port);
     $('#dbDest').val(dbDest.database);
     $('#userDest').val(dbDest.user);
     $('#passwordDest').val(dbDest.password);
@@ -62,10 +64,14 @@ $(function () {
         let $btn = $(this);
         $($btn).attr('disabled', true);
 
+        if ($('#portOrigin').val() !== '1433')
+            $('#serverOrigin').val($('#serverOrigin').val() + ':' + $('#portOrigin').val());
+
         let params = {
             user: $('#userOrigin').val(),
             password: $('#passwordOrigin').val(),
             server: $('#serverOrigin').val(),
+            port: $('#portOrigin').val(),
             database: $('#dbOrigin').val(),
             connectionTimeout: 500000,
             requestTimeout: 500000,
@@ -100,7 +106,7 @@ $(function () {
 
             new PNotify({
                 title: "Sucesso",
-                text: "Banco de dados de origem conectado.",
+                text: "Banco de dados de origem conectado. Lembre de recarregar a tela principal.",
                 type: 'success',
                 icon: false,
                 addclass: "stack-bottomright"
@@ -119,10 +125,14 @@ $(function () {
         let $btn = $(this);
         $($btn).attr('disabled', true);
 
+        if ($('#portDest').val() !== '1433')
+            $('#serverDest').val($('#serverDest').val() + ':' + $('#portDest').val());
+
         let params = {
             user: $('#userDest').val(),
             password: $('#passwordDest').val(),
             server: $('#serverDest').val(),
+            port: $('#portDest').val(),
             database: $('#dbDest').val(),
             connectionTimeout: 500000,
             requestTimeout: 500000,
@@ -157,7 +167,7 @@ $(function () {
 
             new PNotify({
                 title: "Sucesso",
-                text: "Banco de dados de destino conectado.",
+                text: "Banco de dados de destino conectado. Lembre de recarregar a tela principal.",
                 type: 'success',
                 icon: false,
                 addclass: "stack-bottomright"

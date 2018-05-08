@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Tabelas SGI</title>
+    <title>SGI Sincronizador :: Tabelas</title>
     <link rel="stylesheet" href="./css/jquery.flipster.min.css">
     <link rel="stylesheet" href="./css/materialize.min.css">
     <link rel="stylesheet" href="./css/nprogress.css">
@@ -15,35 +15,51 @@
     <link rel="stylesheet" href="./css/styles.css">
 </head>
 
-<body>
-
+<body style="background: none !important;">
     <div class="row">
+        <blockquote class="mybq">
+            <h5>Lista de tabelas de Pessoas, Produtos e Serviços, e Entradas</h5>
+        </blockquote>
+
         <form>
-            <div class="row">
-                <div class="input-field col s12">
-                    <textarea id="textareaProducts" class="materialize-textarea"></textarea>
-                    <label for="textareaProducts">Tabelas de produtos separados por vírgula</label>
-                </div>
+            <div class="input-field col s12">
+                <textarea id="textareaPeople" class="materialize-textarea"></textarea>
+                <label for="textareaPeople">Tabelas de pessoas separados por vírgula</label>
             </div>
-            <div class="row">
-                <div class="input-field col s12">
-                    <textarea id="textareaPeople" class="materialize-textarea"></textarea>
-                    <label for="textareaPeople">Tabelas de pessoas separados por vírgula</label>
-                </div>
+            <div class="input-field col s12">
+                <textarea id="textareaProducts" class="materialize-textarea"></textarea>
+                <label for="textareaProducts">Tabelas de produtos separados por vírgula</label>
             </div>
-            <div class="row">
-                <div class="input-field col s12">
-                    <textarea id="textareaItems" class="materialize-textarea"></textarea>
-                    <label for="textareaItems">Tabelas de entradas separados por vírgula</label>
-                </div>
+            <div class="input-field col s12">
+                <textarea id="textareaItems" class="materialize-textarea"></textarea>
+                <label for="textareaItems">Tabelas de entradas separados por vírgula</label>
             </div>
-            <div class="row">
-                <div class="input-field col s12">
-                    <button id="btnSaveTables" class="btn waves-effect waves-light">Salvar</button>
-                </div>
+            <div class="input-field col s12">
+                <button class="btn waves-effect waves-light modal-trigger" data-target="passwordModal">Salvar</button>
             </div>
         </form>
     </div>
+
+    <!-- Password modal -->
+    <div class="modal" id="passwordModal">
+        <div class="modal-content">
+            <h5>Digite a senha para salvar as tabelas</h5>
+            <div class="input-field">
+
+                <input id="passwd" type="password" class="span3 validate" name="passwd">
+                <label for="passwd">
+                    Esta ação requer autorização do administrador do sistema.</label>
+
+            </div>
+            <p>
+                <button id="btnSaveTables" class="btn btn-primary">Prosseguir</button>
+            </p>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Fechar</a>
+        </div>
+    </div>
+    <!-- /modal -->
 
     <script>
         var eRequire = require;

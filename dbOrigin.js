@@ -13,13 +13,16 @@ function readOriginConfigFile() {
         let fileRead = fse.readFileSync(`${destPath}\\dbOrigin.json`, 'utf8');
         dbOrigin = JSON.parse(fileRead);
 
+        if (dbOrigin.port !== '1433')
+            dbOrigin.server = dbOrigin.server + ':' + dbOrigin.port;
+
         // const mssql = require("mssql");
         dbConfig = {
             user: dbOrigin.user,
             password: dbOrigin.password,
             server: dbOrigin.server,
             database: dbOrigin.database,
-            port: 1433,
+            port: dbOrigin.port,
             connectionTimeout: 500000,
             requestTimeout: 500000,
             pool: {
