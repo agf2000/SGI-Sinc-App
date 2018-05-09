@@ -7,13 +7,23 @@ const fse = eRequire('fs-extra');
 const _ = eRequire("lodash");
 const moment = eRequire('moment');
 const sqlDb = eRequire("mssql");
-const notifier = require('electron-notifications');
+const notifier = require('node-notifier');
+const path = require('path');
 
 const storage = eRequire('electron-json-storage');
 
 let destPath = 'c:\\softer\\Sincronizador';
 
-let dbOrigin = {},
+const mainWin = remote.getCurrentWindow();
+
+let peopleTableList = '',
+    peopleTables = '',
+    productsTableList = '',
+    productsTables = '',
+    itemsTableList = '',
+    itemsTables = '',
+    done = false,
+    dbOrigin = {},
     dbDest = {},
     config = {},
     permanotice,
@@ -87,14 +97,6 @@ const peopleFile = `${destPath}\\config\\people_table.txt`,
     productsFile = `${destPath}\\config\\products_table.txt`,
     itemsFile = `${destPath}\\config\\items_table.txt`;
 
-let peopleTableList = '',
-    peopleTables = '',
-    productsTableList = '',
-    productsTables = '',
-    itemsTableList = '',
-    itemsTables = '',
-    done = false;
-
 fse.readFile(peopleFile, function (err, data) {
     if (err) {
         fse.writeFileSync(peopleFile, 'bairro,cadpais,cep,cidade,estado,financeira,fisica,logradouro,obscliente,pessoas,pessoatipocobranca,profissoes,regioes,telefone,tipologradouro,tipopessoa,tipotelefone', 'utf-8');
@@ -122,28 +124,13 @@ fse.readFile(itemsFile, function (err, data) {
     itemsTables = itemsTableList.replace(/,\s*$/, "").split(',');
 });
 
+var stack_topleft = {
+    "dir1": "down",
+    "dir2": "right",
+    "push": "top"
+};
+
 $(function () {
-
-    let currentWindow = remote.getCurrentWindow();
-
-    // let myNotification = new remote.Notification('Título', {
-    //     body: 'Lorem Ipsum Dolor Sit Amet'
-    // })
-
-    // myNotification.onclick = () => {
-    //     console.log('Notificação clicada')
-    // }
-
-    // Just title
-    // notifier.notify('Calendar');
-
-    // Full Options
-    // notifier.notify('Calendar', {
-    //     message: 'Event begins in 10 minutes',
-    //     icon: 'http://cl.ly/J49B/3951818241085781941.png',
-    //     buttons: ['Dismiss', 'Snooze'],
-    //     duration: 10000
-    // });
 
     $('#productsPasswordModal, #peoplePasswordModal, #itemsPasswordModal, #logModal').modal();
 
@@ -160,20 +147,6 @@ $(function () {
             return false;
         }
         e.preventDefault();
-
-        let ProgressBar = require('progress');
-
-        let bar = new ProgressBar(':bar', {
-            total: 10
-        });
-
-        let timer = setInterval(function () {
-            bar.tick();
-            if (bar.complete) {
-                console.log('\ncomplete\n');
-                clearInterval(timer);
-            }
-        }, 1000);
 
         let $btn = this;
         $($btn).attr('disabled', true);
@@ -217,6 +190,46 @@ $(function () {
                 icon: false,
                 addclass: "stack-bottomright"
             });
+
+            // // Do this from the renderer process
+            // var notif = new window.Notification('Sincronizador', {
+            //     body: 'Backup concluido com sucesso.',
+            //     silent: false // We'll play our own sound
+            // });
+
+            // // If the user clicks in the Notifications Center, show the app
+            // notif.onclick = function () {
+            //     ipcRenderer.send('focusWindow', 'main');
+            // };
+
+            notifier.notify({
+                    title: 'Sincronizador',
+                    message: 'Backup concluido com sucesso.',
+                    sound: true, // true | false.
+                    wait: true, // Wait for User Action against Notification
+                    icon: path.join(__dirname, 'img/icon.png'),
+                    // timeout: 10
+                },
+                function (err, response) {
+                    // Response is response from notification
+                    console.log(response);
+                }
+            );
+
+            notifier.on('click', function (notifierObject, options) {
+                mainWin.focus();
+            });
+
+            // notifier.notify({
+            //         title: 'Sincronizador',
+            //         message: 'Backup concluido com sucesso.',
+            //         icon: 'https://cdn1.iconfinder.com/data/icons/google_jfk_icons_by_carlosjj/64/sync.png',
+            //         contentImage: 'https://cdn1.iconfinder.com/data/icons/google_jfk_icons_by_carlosjj/64/sync.png',
+            //     },
+            //     function (error, response, metadata) {
+            //         console.log(response, metadata);
+            //     }
+            // );
         }).catch(err => {
             console.log(err);
             new PNotify({
@@ -376,9 +389,10 @@ $(function () {
                 title: 'Info!',
                 addclass: 'tooltip',
                 text: msg,
-                type: 'info',
+                type: 'warning',
                 icon: false,
-                addclass: "tooltip stack-bottomright"
+                addclass: "stack-topright",
+                stack: stack_topleft
             });
         }
     });
@@ -425,7 +439,6 @@ function repPeople($btn) {
 };
 
 function getPeople(btn) {
-
     let $btn = btn;
 
     let lineCount = 0,
@@ -746,17 +759,7 @@ function repProducts(btn) {
 
         }).catch(err => {
             console.log(err);
-            $('#ulTiming').append(`<li>Erro: ${err} as ${moment(new Date()).format('HH:mm:ss')}.</li>`);
-
-            NProgress.done();
-            new PNotify({
-                title: "Erro",
-                text: err,
-                type: 'error',
-                icon: false,
-                addclass: "stack-bottomright"
-            });
-            sqlDb.close();
+            sqlError(err);
         });
     });
 };
@@ -1024,7 +1027,7 @@ function importProducts(btn) {
     });
 };
 
-function repItems($btn) {
+function repItems(btn) {
     $($btn).attr('disabled', true);
 
     NProgress.configure({
@@ -1325,8 +1328,9 @@ function importItems(btn) {
     });
 };
 
-function syncPeople($btn) {
-    $($btn).attr('disabled', true);
+function syncPeople(btn) {
+    let $btn = btn;
+    $(btn).attr('disabled', true);
 
     NProgress.configure({
         minimum: 0.1,
@@ -1361,7 +1365,6 @@ function syncPeople($btn) {
 };
 
 function getPeopleSync(btn) {
-
     let $btn = btn;
 
     let lineCount = 0,
@@ -1375,6 +1378,17 @@ function getPeopleSync(btn) {
     _.forEach(peopleTables, function (item, index) {
         sqlGet += `select * from sinc_${item}_view; `;
     });
+
+    var timer = setInterval(function () {
+        if (NProgress.status !== null) {
+            mainWin.setProgressBar(NProgress.status);
+        } else {
+            mainWin.setProgressBar(1.0);
+            mainWin.setProgressBar(0);
+            console.log('\ncomplete\n');
+            clearInterval(timer);
+        }
+    }, 100);
 
     new sqlDb.ConnectionPool(dbOrigin).connect().then(pool => {
         $('#ulTiming').append(`<li>Adiquirindo dados... ${moment(new Date()).format('HH:mm:ss')}.</li>`);
@@ -1443,7 +1457,6 @@ function getPeopleSync(btn) {
 };
 
 function importPeopleSync(btn) {
-
     let $btn = btn;
 
     let counter = peopleTables.length,
@@ -1551,6 +1564,13 @@ function importPeopleSync(btn) {
                                     });
                                     done = true;
                                     NProgress.done();
+
+                                    notifier.notify({
+                                        title: 'Sincronizador',
+                                        message: 'Dados de pessoas sincronizados.',
+                                        wait: true,
+                                        icon: path.join(__dirname, 'img/icon.png')
+                                    });
                                 }).catch(err => {
                                     console.log(err);
                                     new PNotify({
@@ -1562,8 +1582,6 @@ function importPeopleSync(btn) {
                                     });
                                 });
                             });
-
-                            // sqlDb.close();
                         }
                     }).catch(err => {
                         console.log(err);
@@ -1615,8 +1633,9 @@ function importPeopleSync(btn) {
     });
 };
 
-function syncProducts($btn) {
-    $($btn).attr('disabled', true);
+function syncProducts(btn) {
+    let $btn = btn;
+    $(btn).attr('disabled', true);
 
     NProgress.configure({
         minimum: 0.1,
@@ -1651,7 +1670,6 @@ function syncProducts($btn) {
 };
 
 function getProductsSync(btn) {
-
     let $btn = btn;
 
     let lineCount = 0,
@@ -1763,7 +1781,6 @@ function getProductsSync(btn) {
 };
 
 function importProductsSync(btn) {
-
     let $btn = btn;
 
     let counter = productsTables.length,
@@ -2232,8 +2249,9 @@ function importProductsSync(btn) {
     });
 };
 
-function syncItems($btn) {
-    $($btn).attr('disabled', true);
+function syncItems(btn) {
+    let $btn = btn;
+    $(btn).attr('disabled', true);
 
     NProgress.configure({
         minimum: 0.1,
@@ -2268,9 +2286,7 @@ function syncItems($btn) {
 };
 
 function getItemsSync(btn) {
-
     let $btn = btn;
-    $($btn).attr('disabled', true);
 
     let lineCount = 0,
         start = new Date(),
@@ -2286,10 +2302,6 @@ function getItemsSync(btn) {
 
     new sqlDb.ConnectionPool(dbOrigin).connect().then(pool => {
         $('#ulTiming').append(`<li>Adiquirindo itens ${moment(new Date()).format('HH:mm:ss')}.</li>`);
-        // NProgress.configure({
-        //     minimum: 0.1,
-        //     trickleSpeed: 2000
-        // }).start();
 
         pool.request().query(sqlGet).then(data => {
             // console.log(moment(new Date()).format('HH:mm:ss'));
@@ -2355,7 +2367,6 @@ function getItemsSync(btn) {
 };
 
 function importItemsSync(btn) {
-
     let $btn = btn;
 
     let counter = itemsTables.length,
@@ -2466,6 +2477,11 @@ function importItemsSync(btn) {
 
                                     done = true;
                                     NProgress.done();
+
+                                    notifier.notify({
+                                        title: 'Sincronizador',
+                                        message: 'Dados de entradas sincronizados.'
+                                    });
                                 }).catch(err => {
                                     console.log(err);
                                     new PNotify({
@@ -2537,6 +2553,19 @@ function importItemsSync(btn) {
 //         $('#syncsPasswd').focus();
 //     }, 500);
 // });
+
+function sqlError(err) {
+    $('#ulTiming').append(`<li>Erro: ${err} as ${moment(new Date()).format('HH:mm:ss')}.</li>`);
+    NProgress.done();
+    new PNotify({
+        title: "Erro",
+        text: err,
+        type: 'error',
+        icon: false,
+        addclass: "stack-bottomright"
+    });
+    sqlDb.close();
+};
 
 function formatValue2(value, sqlSelIn) {
     if (value == null) {

@@ -22,8 +22,8 @@ function createWindow() {
 
     mainWindow = new BrowserWindow({
         title: "SGI Sincronizador",
-        // x: 0,
-        // y: 10,
+        x: 0,
+        y: 10,
         // autoHideMenuBar: true,
         // minimizable: false,
         width: 800,
@@ -44,11 +44,11 @@ function createWindow() {
     // Insert menu
     Menu.setApplicationMenu(mainMenu);
 
-    // if (process.env.NODE_ENV !== 'production') {
-    //     mainWindow.webContents.openDevTools({
-    // mode: 'detach'
-    // });
-    // }
+    if (process.env.NODE_ENV !== 'production') {
+        mainWindow.webContents.openDevTools({
+            mode: 'detach'
+        });
+    }
 
     // function openSyncsWindow() {
     //     event.sender.send('openSyncsWindow');
