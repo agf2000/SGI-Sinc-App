@@ -1568,9 +1568,20 @@ function importPeopleSync(btn) {
                                     notifier.notify({
                                         title: 'Sincronizador',
                                         message: 'Dados de pessoas sincronizados.',
-                                        wait: true,
-                                        icon: path.join(__dirname, 'img/icon.png')
+                                        sound: true, // true | false.
+                                        wait: true, // Wait for User Action against Notification
+                                        icon: path.join(__dirname, 'img/icon.png'),
+                                        // timeout: 10
+                                    },
+                                    function (err, response) {
+                                        // Response is response from notification
+                                        console.log(response);
                                     });
+                    
+                                    notifier.on('click', function (notifierObject, options) {
+                                        mainWin.focus();
+                                    });
+                                    
                                 }).catch(err => {
                                     console.log(err);
                                     new PNotify({
@@ -1825,7 +1836,7 @@ function importProductsSync(btn) {
         fse.pathExists(file, (err, exists) => {
             if (exists) {
 
-                if (table == 'produto') {
+                // if (table == 'produto') {
                     lineCount++;
 
                     let theColumns = fse.readFileSync(`${destPath}\\tabelas\\${table}_columns.json`, 'utf8');
@@ -1839,7 +1850,7 @@ function importProductsSync(btn) {
 
                     sqlInst += `select top 0 * into #sinc_${table}_${index} from ${table}; `;
 
-                    if (table == 'Itens_Grade_Estoque')
+                    if (table !== 'produto')
                         sqlInst += `delete from ${table}; `;
 
                     sqlInst += `if ((select objectproperty(object_id('${table}'), 'TableHasIdentity')) = 1) `;
@@ -1940,9 +1951,13 @@ function importProductsSync(btn) {
                     sqlInst += sqlSel + ' ';
                     sqlInst += `from ${table} as t_${index}_1 `;
 
-                    if (table == 'parametros_produto') {
-                        sqlInst += `inner join #sinc_${table}_${index} as t_${index}_2 on t_${index}_1.codproduto = t_${index}_2.codproduto; `;
-                    } else if (table !== 'Itens_Grade_Estoque') {
+                    // if (table == 'parametros_produto') {
+                    //     sqlInst += `inner join #sinc_${table}_${index} as t_${index}_2 on t_${index}_1.codproduto = t_${index}_2.codproduto; `;
+                    // } else if (table !== 'Itens_Grade_Estoque') {
+                    //     sqlInst += `inner join #sinc_${table}_${index} as t_${index}_2 on t_${index}_1.codigo = t_${index}_2.codigo; `;
+                    // }
+
+                    if (table == 'produto') {
                         sqlInst += `inner join #sinc_${table}_${index} as t_${index}_2 on t_${index}_1.codigo = t_${index}_2.codigo; `;
                     }
 
@@ -1996,16 +2011,18 @@ function importProductsSync(btn) {
                     sqlInst += `from #sinc_${table}_${index} `;
                     // sqlInst += `left outer join ${table} on ${table}.codigo = #sinc_${table}_${index}.codigo `;
 
-                    if (table == 'parametros_produto') {
-                        sqlInst += `where not #sinc_${table}_${index}.codproduto in (select codproduto from ${table}); `;
-                    } else if (table !== 'Itens_Grade_Estoque') {
+                    if (table == 'produto') {
                         sqlInst += `where not #sinc_${table}_${index}.codigo in (select codigo from ${table}); `;
                     }
 
                     sqlInst += `if ((select objectproperty(object_id('${table}'), 'TableHasIdentity')) = 1) `;
                     sqlInst += 'begin ';
-                    sqlInst += `set identity_insert #sinc_${table}_${index} off; `;
-                    sqlInst += `drop table #sinc_${table}_${index}; `;
+
+                    if (table == 'produto') {
+                        sqlInst += `set identity_insert #sinc_${table}_${index} off; `;                    
+                        sqlInst += `drop table #sinc_${table}_${index}; `;
+                    }
+
                     sqlInst += `set identity_insert ${table} off; `;
                     sqlInst += 'end; ';
 
@@ -2114,134 +2131,134 @@ function importProductsSync(btn) {
                             });
                         });
                     });
-                } else {
-                    let theColumns;
-                    theColumns = fse.readFileSync(`${destPath}\\tabelas\\${table}_columns.json`, 'utf8');
-                    let dataFromFile = fse.readFileSync(`${destPath}\\tabelas\\${table}.json`, 'utf8');
+                // } else {
+                //     let theColumns;
+                //     theColumns = fse.readFileSync(`${destPath}\\tabelas\\${table}_columns.json`, 'utf8');
+                //     let dataFromFile = fse.readFileSync(`${destPath}\\tabelas\\${table}.json`, 'utf8');
 
-                    let jsonData = chunks(JSON.parse(dataFromFile), 1000);
+                //     let jsonData = chunks(JSON.parse(dataFromFile), 1000);
 
-                    let sqlInst = ''; // `set language portuguese; waitfor delay \'00:00:05\'; `;
+                //     let sqlInst = ''; // `set language portuguese; waitfor delay \'00:00:05\'; `;
 
-                    sqlInst += `delete from ${table}; `;
-                    sqlInst += `if ((select objectproperty(object_id('${table}'), 'TableHasIdentity')) = 1) `;
-                    sqlInst += `set identity_insert ${table} on; `;
-                    sqlInst += `declare @list_${table + '_' + index} varchar(max); `;
+                //     sqlInst += `delete from ${table}; `;
+                //     sqlInst += `if ((select objectproperty(object_id('${table}'), 'TableHasIdentity')) = 1) `;
+                //     sqlInst += `set identity_insert ${table} on; `;
+                //     sqlInst += `declare @list_${table + '_' + index} varchar(max); `;
 
-                    lineCount++;
+                //     lineCount++;
 
-                    _.forEach(jsonData, function (parts) {
+                //     _.forEach(jsonData, function (parts) {
 
-                        sqlInst += `set @list_${table + '_' + index} = `;
+                //         sqlInst += `set @list_${table + '_' + index} = `;
 
-                        let sqlSel = `'`;
-                        _.forEach(parts, function (data) {
+                //         let sqlSel = `'`;
+                //         _.forEach(parts, function (data) {
 
-                            sqlSel += `select `;
-                            let sqlSelIn = '';
-                            sqlSelIn = formatValue1(data, sqlSelIn);
-                            sqlSel += sqlSelIn.replace(/,\s*$/, " ");
-                        });
+                //             sqlSel += `select `;
+                //             let sqlSelIn = '';
+                //             sqlSelIn = formatValue1(data, sqlSelIn);
+                //             sqlSel += sqlSelIn.replace(/,\s*$/, " ");
+                //         });
 
-                        sqlInst += `${sqlSel}'; insert into ${table} (`;
+                //         sqlInst += `${sqlSel}'; insert into ${table} (`;
 
-                        sqlInst += `${theColumns.replace(/['"]+/g, '')}) exec(@list_${table + '_' + index}); `;
-                    });
+                //         sqlInst += `${theColumns.replace(/['"]+/g, '')}) exec(@list_${table + '_' + index}); `;
+                //     });
 
-                    sqlInst += `if ((select objectproperty(object_id('${table}'), 'TableHasIdentity')) = 1)`;
-                    sqlInst += `set identity_insert ${table} off; `;
+                //     sqlInst += `if ((select objectproperty(object_id('${table}'), 'TableHasIdentity')) = 1)`;
+                //     sqlInst += `set identity_insert ${table} off; `;
 
-                    // adding to sql database
-                    new sqlDb.ConnectionPool(dbDest).connect().then(pool => {
-                        pool.request().query(sqlInst).then(result => {
-                            // console.log(moment(new Date()).format('HH:mm:ss'));
-                            // console.log(result);
+                //     // adding to sql database
+                //     new sqlDb.ConnectionPool(dbDest).connect().then(pool => {
+                //         pool.request().query(sqlInst).then(result => {
+                //             // console.log(moment(new Date()).format('HH:mm:ss'));
+                //             // console.log(result);
 
-                            // $('#ulTiming').append(`<li>${table} (${n(dateDiff(starting.getTime()).minute)}:${n(dateDiff(starting.getTime()).second)})`);
-                            console.log(`${table} (${n(dateDiff(starting.getTime()).minute)}:${n(dateDiff(starting.getTime()).second)})`);
-                            starting = new Date();
+                //             // $('#ulTiming').append(`<li>${table} (${n(dateDiff(starting.getTime()).minute)}:${n(dateDiff(starting.getTime()).second)})`);
+                //             console.log(`${table} (${n(dateDiff(starting.getTime()).minute)}:${n(dateDiff(starting.getTime()).second)})`);
+                //             starting = new Date();
 
-                            counter = counter - 1;
+                //             counter = counter - 1;
 
-                            $('#liTiming').html(counter);
+                //             $('#liTiming').html(counter);
 
-                            if (counter == 0) {
+                //             if (counter == 0) {
 
-                                sqlDb.connect(dbDest).then(pool => {
-                                    let sqlEndInst = "exec sp_msforeachtable 'ALTER TABLE ? ENABLE TRIGGER all'; exec sp_habilitar_chaves;";
-                                    pool.request().query(sqlEndInst).then(result => {
-                                        // console.log(result);
-                                        $('#ulTiming').append(`<li>Dados importados em ${n(dateDiff(start.getTime()).minute)}:${n(dateDiff(start.getTime()).second)}.</li>`);
+                //                 sqlDb.connect(dbDest).then(pool => {
+                //                     let sqlEndInst = "exec sp_msforeachtable 'ALTER TABLE ? ENABLE TRIGGER all'; exec sp_habilitar_chaves;";
+                //                     pool.request().query(sqlEndInst).then(result => {
+                //                         // console.log(result);
+                //                         $('#ulTiming').append(`<li>Dados importados em ${n(dateDiff(start.getTime()).minute)}:${n(dateDiff(start.getTime()).second)}.</li>`);
 
-                                        new PNotify({
-                                            title: "Sucesso",
-                                            text: "Replicação executada com sucesso.",
-                                            type: 'success',
-                                            icon: false,
-                                            addclass: "stack-bottomright"
-                                        });
+                //                         new PNotify({
+                //                             title: "Sucesso",
+                //                             text: "Replicação executada com sucesso.",
+                //                             type: 'success',
+                //                             icon: false,
+                //                             addclass: "stack-bottomright"
+                //                         });
 
-                                        done = true;
-                                        $('#btnOpenItemsModal').addClass('disabled');
-                                        NProgress.done();
-                                    }).catch(err => {
-                                        console.log(err);
-                                        new PNotify({
-                                            title: "Erro",
-                                            text: err,
-                                            type: 'error',
-                                            icon: false,
-                                            addclass: "stack-bottomright"
-                                        });
-                                    });
-                                });
+                //                         done = true;
+                //                         $('#btnOpenItemsModal').addClass('disabled');
+                //                         NProgress.done();
+                //                     }).catch(err => {
+                //                         console.log(err);
+                //                         new PNotify({
+                //                             title: "Erro",
+                //                             text: err,
+                //                             type: 'error',
+                //                             icon: false,
+                //                             addclass: "stack-bottomright"
+                //                         });
+                //                     });
+                //                 });
 
-                                // sqlDb.close();
-                            }
-                        }).catch(err => {
-                            console.log(err);
-                            // $('#ulTiming').append(`<li>Erro: ${err} as ${moment(new Date()).format('HH:mm:ss')}.</li>`);
-                            clearInterval(myVal);
-                            sqlDb.close();
+                //                 // sqlDb.close();
+                //             }
+                //         }).catch(err => {
+                //             console.log(err);
+                //             // $('#ulTiming').append(`<li>Erro: ${err} as ${moment(new Date()).format('HH:mm:ss')}.</li>`);
+                //             clearInterval(myVal);
+                //             sqlDb.close();
 
-                            new sqlDb.ConnectionPool(dbDest).connect().then(pool => {
-                                let sqlEndInst = "exec sp_msforeachtable 'ALTER TABLE ? ENABLE TRIGGER all'; exec sp_habilitar_chaves;";
-                                pool.request().query(sqlEndInst).then(result => {
-                                    console.log(result);
-                                    $('#ulTiming').append(`<li>Erro: ${err} as ${moment(new Date()).format('HH:mm:ss')}.</li>`);
-                                    sqlDb.close();
-                                    new PNotify({
-                                        title: "Erro",
-                                        text: result,
-                                        type: 'error',
-                                        icon: false,
-                                        addclass: "stack-bottomright"
-                                    });
-                                    $('#btnOpenItemsModal').addClass('disabled');
-                                    NProgress.done();
-                                }).catch(err => {
-                                    console.log(err);
-                                    new PNotify({
-                                        title: "Erro",
-                                        text: err,
-                                        type: 'error',
-                                        icon: false,
-                                        addclass: "stack-bottomright"
-                                    });
-                                    sqlDb.close();
-                                });
-                            });
+                //             new sqlDb.ConnectionPool(dbDest).connect().then(pool => {
+                //                 let sqlEndInst = "exec sp_msforeachtable 'ALTER TABLE ? ENABLE TRIGGER all'; exec sp_habilitar_chaves;";
+                //                 pool.request().query(sqlEndInst).then(result => {
+                //                     console.log(result);
+                //                     $('#ulTiming').append(`<li>Erro: ${err} as ${moment(new Date()).format('HH:mm:ss')}.</li>`);
+                //                     sqlDb.close();
+                //                     new PNotify({
+                //                         title: "Erro",
+                //                         text: result,
+                //                         type: 'error',
+                //                         icon: false,
+                //                         addclass: "stack-bottomright"
+                //                     });
+                //                     $('#btnOpenItemsModal').addClass('disabled');
+                //                     NProgress.done();
+                //                 }).catch(err => {
+                //                     console.log(err);
+                //                     new PNotify({
+                //                         title: "Erro",
+                //                         text: err,
+                //                         type: 'error',
+                //                         icon: false,
+                //                         addclass: "stack-bottomright"
+                //                     });
+                //                     sqlDb.close();
+                //                 });
+                //             });
 
-                            new PNotify({
-                                title: "Erro",
-                                text: err,
-                                type: 'error',
-                                icon: false,
-                                addclass: "stack-bottomright"
-                            });
-                        });
-                    });
-                }
+                //             new PNotify({
+                //                 title: "Erro",
+                //                 text: err,
+                //                 type: 'error',
+                //                 icon: false,
+                //                 addclass: "stack-bottomright"
+                //             });
+                //         });
+                //     });
+                // }
             } else {
                 counter = counter - 1;
             }
@@ -2480,7 +2497,19 @@ function importItemsSync(btn) {
 
                                     notifier.notify({
                                         title: 'Sincronizador',
-                                        message: 'Dados de entradas sincronizados.'
+                                        message: 'Dados de entradas sincronizados.',
+                                        sound: true, // true | false.
+                                        wait: true, // Wait for User Action against Notification
+                                        icon: path.join(__dirname, 'img/icon.png'),
+                                        // timeout: 10
+                                    },
+                                    function (err, response) {
+                                        // Response is response from notification
+                                        console.log(response);
+                                    });
+                    
+                                    notifier.on('click', function (notifierObject, options) {
+                                        mainWin.focus();
                                     });
                                 }).catch(err => {
                                     console.log(err);
