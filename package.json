@@ -8,7 +8,8 @@
 	"scripts": {
 		"pack": "build --dir",
 		"dist": "build --win --ia32",
-		"start": "electron ."
+		"production": "SET NODE_ENV=production & electron .",
+		"start": "SET NODE_ENV=development & electron ."
 	},
 	"dependencies": {
 		"@trodi/electron-splashscreen": "^0.3.1",
@@ -22,7 +23,8 @@
 		"mssql": "^4.1.0",
 		"node-notifier": "^5.2.1",
 		"nprogress": "^0.2.0",
-		"progress": "^2.0.0"
+		"progress": "^2.0.0",
+		"uuid": "^3.2.1"
 	},
 	"devDependencies": {
 		"devtron": "^1.4.0",

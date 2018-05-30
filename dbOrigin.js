@@ -13,10 +13,8 @@ function readOriginConfigFile() {
         let fileRead = fse.readFileSync(`${destPath}\\dbOrigin.json`, 'utf8');
         dbOrigin = JSON.parse(fileRead);
 
-        if (dbOrigin.port !== '1433')
-            dbOrigin.server = dbOrigin.server + ':' + dbOrigin.port;
-
         // const mssql = require("mssql");
+
         dbConfig = {
             user: dbOrigin.user,
             password: dbOrigin.password,
@@ -30,6 +28,13 @@ function readOriginConfigFile() {
                 max: 100
             }
         };
+
+        if (dbOrigin.port !== '1433') {
+            dbConfig.server = dbOrigin.server.split('\\')[0],
+                dbConfig.dialectOptions = {
+                    instanceName: dbOrigin.server.split('\\')[1]
+                }
+        }
 
         // const pool = new mssql.ConnectionPool(dbConfig);
         // pool.on('error', err => {

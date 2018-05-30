@@ -64,9 +64,6 @@ $(function () {
         let $btn = $(this);
         $($btn).attr('disabled', true);
 
-        if ($('#portOrigin').val() !== '1433')
-            $('#serverOrigin').val($('#serverOrigin').val() + ':' + $('#portOrigin').val());
-
         let params = {
             user: $('#userOrigin').val(),
             password: $('#passwordOrigin').val(),
@@ -79,6 +76,13 @@ $(function () {
                 idleTimeoutMillis: 500000,
                 max: 100
             }
+        };
+
+        if ($('#portOrigin').val() !== '1433') {
+            params.server = $('#serverOrigin').val().split('\\')[0],
+                params.dialectOptions = {
+                    instanceName: $('#serverOrigin').val().split('\\')[1]
+                }
         }
 
         sqlDb.connect(params, function (err) {
@@ -97,7 +101,8 @@ $(function () {
                 return;
             };
 
-            params.server = $('#serverOrigin').val().replace(/\\/g, "\\");
+            if ($('#portOrigin').val() == '1433')
+                params.server = $('#serverOrigin').val().replace(/\\/g, "\\");
 
             storage.set('dbOrigin', params, function (error) {
                 if (error)
@@ -125,9 +130,6 @@ $(function () {
         let $btn = $(this);
         $($btn).attr('disabled', true);
 
-        if ($('#portDest').val() !== '1433')
-            $('#serverDest').val($('#serverDest').val() + ':' + $('#portDest').val());
-
         let params = {
             user: $('#userDest').val(),
             password: $('#passwordDest').val(),
@@ -140,6 +142,13 @@ $(function () {
                 idleTimeoutMillis: 500000,
                 max: 100
             }
+        };
+
+        if ($('#portDest').val() !== '1433') {
+            params.server = $('#serverDest').val().split('\\')[0],
+                params.dialectOptions = {
+                    instanceName: $('#serverDest').val().split('\\')[1]
+                }
         }
 
         sqlDb.connect(params, function (err) {
@@ -158,7 +167,8 @@ $(function () {
                 return;
             };
 
-            params.server = $('#serverDest').val().replace(/\\/g, "\\");
+            if ($('#portDest').val() == '1433')
+                params.server = $('#serverDest').val().replace(/\\/g, "\\");
 
             storage.set('dbDest', params, function (error) {
                 if (error)

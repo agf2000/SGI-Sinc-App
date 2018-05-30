@@ -28,6 +28,13 @@ function readDestConfigFile() {
             }
         };
 
+        if (dbDest.port !== '1433') {
+            dbConfig.server = dbDest.server.split('\\')[0],
+                dbConfig.dialectOptions = {
+                    instanceName: dbDest.server.split('\\')[1]
+                }
+        }
+
         // const pool = new mssql.ConnectionPool(dbConfig);
         // pool.on('error', err => {
         //     if (err) {
