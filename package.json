@@ -24,6 +24,7 @@
 		"node-notifier": "^5.2.1",
 		"nprogress": "^0.2.0",
 		"progress": "^2.0.0",
+		"socket.io": "^2.1.1",
 		"uuid": "^3.2.1"
 	},
 	"devDependencies": {

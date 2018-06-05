@@ -2,17 +2,23 @@ const electron = require('electron');
 const url = require('url');
 const path = require('path');
 const devToolsInstaller = require('electron-devtools-installer');
+const os = require('os');
 
 const {
     app,
     BrowserWindow,
-    Menu
+    Menu,
+    dialog
 } = electron;
 
 let mainWindow = null,
     serversWindow = null,
     tablesWindow = null,
     syncsWindow = null;
+
+const io = require('socket.io-client');
+
+let socket = io("http://192.168.25.170:3000");
 
 // Listen for the app to be ready
 // vscode-fold=0
@@ -54,6 +60,23 @@ function createWindow() {
     // function openSyncsWindow() {
     //     event.sender.send('openSyncsWindow');
     // };
+
+    // socket.on('welcome', () => {
+    //     console.log('welcome received'); // displayed
+    //     socket.emit('test')
+    // });
+
+    socket.on('error', (e) => {
+        console.log(e); // not displayed
+    });
+
+    socket.on('connect', () => {
+        console.log("connected"); // displayed
+    });
+
+    socket.on('messages', (e) => {
+        console.log(e); // displayed
+    });
 };
 
 // Create menu template
@@ -61,39 +84,68 @@ function createWindow() {
 const mainMenuTemplate = [{
         label: 'Aplicativo',
         submenu: [{
-                label: 'Configuração',
-                submenu: [{
-                        label: 'Servidores',
-                        accelerator: process.platform === 'darwin' ? 'Command+S' : 'Ctrl+S',
-                        click(item, focusedWindow) {
-                            if (focusedWindow) openServersWindow();
-                        }
-                    },
-                    {
-                        label: 'Tabelas',
-                        accelerator: process.platform === 'darwin' ? 'Command+T' : 'Ctrl+T',
-                        click(item, focusedWindow) {
-                            if (focusedWindow) openTablesWindow();
-                        }
-                    },
-                    {
-                        label: 'Exceções',
-                        accelerator: process.platform === 'darwin' ? 'Command+Y' : 'Ctrl+Y',
-                        click(item, focusedWindow) {
-                            if (focusedWindow) openSyncsWindow();
-                            // focusedWindow.webContents.send('openSyncsWindow');
-                        }
-                    }
-                ]
-            },
-            {
-                label: 'Recarregar',
-                accelerator: 'CmdOrCtrl+R',
+            label: 'Configuração',
+            submenu: [{
+                label: 'Servidores',
+                accelerator: process.platform === 'darwin' ? 'Command+S' : 'Ctrl+S',
                 click(item, focusedWindow) {
-                    if (focusedWindow) focusedWindow.reload()
+                    if (focusedWindow) openServersWindow();
                 }
+            }, {
+                label: 'Tabelas',
+                accelerator: process.platform === 'darwin' ? 'Command+T' : 'Ctrl+T',
+                click(item, focusedWindow) {
+                    if (focusedWindow) openTablesWindow();
+                }
+            }, {
+                label: 'Exceções',
+                accelerator: process.platform === 'darwin' ? 'Command+Y' : 'Ctrl+E',
+                click(item, focusedWindow) {
+                    if (focusedWindow) openSyncsWindow();
+                }
+            }]
+        }, {
+            type: 'separator'
+        }, {
+            label: 'Comunicar Início',
+            accelerator: process.platform === 'darwin' ? 'Command+Y' : 'Ctrl+I',
+            click(item, focusedWindow) {
+                // focusedWindow.webContents.send('startSynComunication');
+                let msg = {
+                    username: os.userInfo().username,
+                    message: 'syncing'
+                };
+                socket.emit('messages', JSON.stringify(msg));
+                dialog.showMessageBox({
+                    title: "Informativo",
+                    message: "Notificação enviada!",
+                    buttons: ["OK"]
+                });
             }
-        ]
+        }, {
+            label: 'Comunicar Término',
+            accelerator: process.platform === 'darwin' ? 'Command+Y' : 'Ctrl+F',
+            click(item, focusedWindow) {
+                let msg = {
+                    username: os.userInfo().username,
+                    message: 'doneSyncing'
+                };
+                socket.emit('messages', JSON.stringify(msg));
+                dialog.showMessageBox({
+                    title: "Informativo",
+                    message: "Notificação enviada!",
+                    buttons: ["OK"]
+                });
+            }
+        }, {
+            type: 'separator'
+        }, {
+            label: 'Recarregar',
+            accelerator: 'CmdOrCtrl+R',
+            click(item, focusedWindow) {
+                if (focusedWindow) focusedWindow.reload()
+            }
+        }]
     }, {
         label: 'Sair',
         click() {

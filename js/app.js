@@ -2581,13 +2581,6 @@ function importItemsSync(btn) {
     });
 };
 
-// ipcRenderer.on('openSyncsWindow', function (event, args) {
-//     $('#syncsPasswordModal').modal('open');
-//     setTimeout(function () {
-//         $('#syncsPasswd').focus();
-//     }, 500);
-// });
-
 function sqlError(err) {
     $('#ulTiming').append(`<li>Erro: ${err} as ${moment(new Date()).format('HH:mm:ss')}.</li>`);
     NProgress.done();
