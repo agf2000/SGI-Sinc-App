@@ -21,9 +21,19 @@
             <h5>
                 <blockquote>Backup</blockquote>
             </h5>
-            <div class="btn-div tooltipHelp" data-tooltip="Fazer backup do banco de dados de destino (local).">
-                <button id="btnBackup" class="btn red lighten-1 waves-effect waves-light">
+            <div class="btn-div tooltipped" data-position="right" data-tooltip="Notificar usuários sobre o início da sincronização.">
+                <button id="btnStartNotification" class="btn green lighten-1 waves-effect waves-light">
+                    Notificar Início
+                </button>
+            </div>
+            <div class="btn-div tooltipped" data-position="bottom" data-tooltip="Fazer backup do banco de dados de destino (banco local).">
+                <button id="btnBackup" class="btn red waves-effect waves-light">
                     Backup Banco de Dados
+                </button>
+            </div>
+            <div class="btn-div tooltipped" data-position="left" data-tooltip="Notificar usuários sobre o término da sincronização.">
+                <button id="btnEndNotification" class="btn green lighten-1 waves-effect waves-light">
+                    Notificar Término
                 </button>
             </div>
         </div>
@@ -32,17 +42,17 @@
             <h5>
                 <blockquote class="mybq">Sincronizar</blockquote>
             </h5>
-            <div class="btn-div tooltipHelp" data-tooltip="Sincronizar clientes, fornecedores, transportadoras, funcionários e usuários.">
+            <div class="btn-div tooltipped" data-position="right" data-tooltip="Sincronizar clientes, fornecedores, transportadoras, funcionários e usuários.">
                 <button id="btnSyncPeople" class="btn waves-effect waves-light blue darken-1 disabled">
                     Sincronizar Pessoas
                 </button>
             </div>
-            <div class="btn-div tooltipHelp" data-tooltip="Sincronizar produtos e serviços.">
+            <div class="btn-div tooltipped" data-position="bottom" data-tooltip="Sincronizar produtos e serviços.">
                 <button id="btnSyncProducts" class="btn waves-effect waves-light blue darken-1 disabled">
                     Sincronizar Produtos
                 </button>
             </div>
-            <div class="btn-div tooltipHelp" data-tooltip="Sincronizar todas notas de entradas e seus itens.">
+            <div class="btn-div tooltipped" data-position="left" data-tooltip="Sincronizar todas notas de entradas e seus itens.">
                 <button id="btnSyncItems" class="btn waves-effect waves-light blue darken-1 disabled">
                     Sincronizar Entrada
                 </button>
@@ -53,17 +63,17 @@
             <h5>
                 <blockquote class="mybq2">Replicar</blockquote>
             </h5>
-            <div class="btn-div tooltipHelp" data-tooltip="Substituir todos clientes, fornecedores, transportadoras, funcionários e usuários.">
+            <div class="btn-div tooltipped" data-position="right" data-tooltip="Substituir todos clientes, fornecedores, transportadoras, funcionários e usuários.">
                 <button id="btnOpenPeopleModal" class="btn waves-effect waves-light modal-trigger disabled" data-target="peoplePasswordModal">
                     Replicar Pessoas
                 </button>
             </div>
-            <div class="btn-div tooltipHelp" data-tooltip="Substituir todos produtos e serviços.">
+            <div class="btn-div tooltipped" data-position="top" data-tooltip="Substituir todos produtos e serviços.">
                 <button id="btnOpenProductsModal" class="btn waves-effect waves-light modal-trigger disabled" data-target="productsPasswordModal">
                     Replicar Produtos
                 </button>
             </div>
-            <div class="btn-div tooltipHelp" data-tooltip="Substituir todas notas de entradas e seus itens.">
+            <div class="btn-div tooltipped" data-position="left" data-tooltip="Substituir todas notas de entradas e seus itens.">
                 <button id="btnOpenItemsModal" class="btn waves-effect waves-light modal-trigger disabled" data-target="itemsPasswordModal">
                     Replicar Entrada
                 </button>

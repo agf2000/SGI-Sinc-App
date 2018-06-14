@@ -9,7 +9,8 @@ const moment = eRequire('moment');
 const sqlDb = eRequire("mssql");
 const notifier = require('node-notifier');
 const path = require('path');
-const uuid = require('uuid');
+// const uuid = require('uuid');
+const io = require('socket.io-client');
 
 const storage = eRequire('electron-json-storage');
 
@@ -27,13 +28,15 @@ let peopleTableList = '',
     dbOrigin = {},
     dbDest = {},
     config = {},
-    permanotice,
-    syncStock,
-    syncActive,
-    syncNewItems,
-    syncComission,
-    syncCost,
-    syncPrice,
+    // permanotice,
+    syncStock = false,
+    syncActive = false,
+    syncNewItems = false,
+    syncNewProducts = false,
+    syncNewPeople = false,
+    syncComission = false,
+    syncCost = false,
+    syncPrice = false,
     syncCategory,
     syncGroup,
     timer;
@@ -49,12 +52,14 @@ fse.readFile(`${destPath}\\config\\config.json`, function (err, data) {
     let fileRead = fse.readFileSync(`${destPath}\\config\\config.json`, 'utf8');
     config = JSON.parse(fileRead);
 
-    syncStock = config.syncStock;
-    syncActive = config.syncActive;
-    syncNewItems = config.syncNewItems;
-    synComission = config.synComission;
-    syncCost = config.syncCost;
-    syncPrice = config.syncPrice;
+    syncStock = config.syncStock || false;
+    syncActive = config.syncActive || false;
+    syncNewItems = config.syncNewItems || false;
+    syncNewProducts = config.syncNewProducts || false;
+    syncNewPeople = config.syncNewPeople || false;
+    synComission = config.synComission || false;
+    syncCost = config.syncCost || false;
+    syncPrice = config.syncPrice || false;
     syncCategory = config.syncCategory;
     syncGroup = config.syncGroup;
 });
@@ -134,6 +139,8 @@ var stack_topleft = {
 
 $(function () {
 
+    $('.tooltipped').tooltip();
+
     $('#productsPasswordModal, #peoplePasswordModal, #itemsPasswordModal, #logModal').modal();
 
     // console.log(destPath);
@@ -141,6 +148,19 @@ $(function () {
 
     storage.remove(destPath + '\\tabelas', function (error) {
         if (error) throw error;
+    });
+
+    // Backup click
+    $('#btnStartNotification').click(function (e) {
+        if (e.clientX === 0) {
+            return false;
+        }
+        e.preventDefault();
+
+        let $btn = this;
+        $($btn).attr('disabled', true);
+
+        startSyncComunication();
     });
 
     // Backup click
@@ -180,10 +200,13 @@ $(function () {
             $('#btnOpenProductsModal').removeClass('disabled');
             $('#btnOpenPeopleModal').removeClass('disabled');
             $('#btnOpenItemsModal').removeClass('disabled');
-            $('#btnSyncProducts').removeClass('disabled');
-            $('#btnSyncPeople').removeClass('disabled');
+
             if (syncNewItems)
                 $('#btnSyncItems').removeClass('disabled');
+            if (syncNewProducts)
+                $('#btnSyncProducts').removeClass('disabled');
+            if (syncNewPeople)
+                $('#btnSyncPeople').removeClass('disabled');
 
             new PNotify({
                 title: "Sucesso!",
@@ -243,6 +266,19 @@ $(function () {
             });
             sqlDb.close();
         });
+    });
+
+    // Backup click
+    $('#btnEndNotification').click(function (e) {
+        if (e.clientX === 0) {
+            return false;
+        }
+        e.preventDefault();
+
+        let $btn = this;
+        $($btn).attr('disabled', true);
+
+        endSyncComunication();
     });
 
     // Sync people click
@@ -353,30 +389,30 @@ $(function () {
         }
     });
 
-    $('.tooltipHelp').mouseover(function (ele) {
-        let msg = $(ele.currentTarget).data().tooltip;
+    // $('.tooltipHelp').mouseover(function (ele) {
+    //     let msg = $(ele.currentTarget).data().tooltip;
 
-        if (permanotice) {
-            permanotice.open();
-            permanotice.update({
-                text: msg
-            });
-        } else {
-            permanotice = new PNotify({
-                title: 'Info!',
-                addclass: 'tooltip',
-                text: msg,
-                type: 'warning',
-                icon: false,
-                addclass: "stack-topright",
-                stack: stack_topleft
-            });
-        }
-    });
+    //     if (permanotice) {
+    //         permanotice.open();
+    //         permanotice.update({
+    //             text: msg
+    //         });
+    //     } else {
+    //         permanotice = new PNotify({
+    //             title: 'Info!',
+    //             addclass: 'tooltip',
+    //             text: msg,
+    //             type: 'warning',
+    //             icon: false,
+    //             addclass: "stack-topright",
+    //             stack: stack_topleft
+    //         });
+    //     }
+    // });
 
-    $('.tooltipHelp').mouseout(function (ele) {
-        if (permanotice) permanotice.remove();
-    });
+    // $('.tooltipHelp').mouseout(function (ele) {
+    //     if (permanotice) permanotice.remove();
+    // });
 });
 
 function repPeople() {
@@ -488,8 +524,6 @@ function getPeople() {
         }).catch(err => {
             console.log(err);
             $('#ulTiming').append(`<li>Erro: ${err} as ${moment(new Date()).format('HH:mm:ss')}.</li>`);
-            clearInterval(myVal);
-            done = true;
             NProgress.done();
             new PNotify({
                 title: "Erro",
@@ -1083,8 +1117,6 @@ function getItems() {
         }).catch(err => {
             console.log(err);
             $('#ulTiming').append(`<li>Erro: ${err} as ${moment(new Date()).format('HH:mm:ss')}.</li>`);
-            clearInterval(myVal);
-            done = true;
             NProgress.done();
             new PNotify({
                 title: "Erro",
@@ -1386,8 +1418,6 @@ function getPeopleSync(btn) {
         }).catch(err => {
             console.log(err);
             $('#ulTiming').append(`<li>Erro: ${err} as ${moment(new Date()).format('HH:mm:ss')}.</li>`);
-            clearInterval(myVal);
-            done = true;
             NProgress.done();
             new PNotify({
                 title: "Erro",
@@ -2364,8 +2394,6 @@ function getItemsSync(btn) {
         }).catch(err => {
             console.log(err);
             $('#ulTiming').append(`<li>Erro: ${err} as ${moment(new Date()).format('HH:mm:ss')}.</li>`);
-            clearInterval(myVal);
-            done = true;
             sqlDb.close();
             new PNotify({
                 title: "Erro",
@@ -2707,4 +2735,40 @@ let chunks = function (array, size) {
         results.push(array.splice(0, size));
     }
     return results;
+};
+
+let startSyncComunication = function () {
+    let socket = io("http://softersgi.ddns.com.br:3000");
+
+    let msg = {
+        username: os.userInfo().username,
+        type: "syncing",
+        message: "Sincronização em andamento.<br />Favor não utilizar o SGI."
+    };
+
+    socket.emit('messages', JSON.stringify(msg));
+
+    remote.dialog.showMessageBox({
+        title: "Informativo",
+        message: "Notificação enviada!",
+        buttons: ["OK"]
+    });
+};
+
+let endSyncComunication = function () {
+    let socket = io("http://softersgi.ddns.com.br:3000");
+
+    let msg = {
+        username: os.userInfo().username,
+        type: "doneSyncing",
+        message: "Sincronização efetuada.<br />SGI liberado para uso."
+    };
+
+    socket.emit('messages', JSON.stringify(msg));
+
+    remote.dialog.showMessageBox({
+        title: "Informativo",
+        message: "Notificação enviada!",
+        buttons: ["OK"]
+    });
 };

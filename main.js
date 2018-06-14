@@ -18,7 +18,7 @@ let mainWindow = null,
 
 const io = require('socket.io-client');
 
-let socket = io("http://192.168.25.170:3000");
+let socket = io("http://softersgi.dnns.com.br:3000");
 
 // Listen for the app to be ready
 // vscode-fold=0
@@ -77,6 +77,14 @@ function createWindow() {
     socket.on('messages', (e) => {
         console.log(e); // displayed
     });
+
+    function startSynComunication() {
+        event.sender.send('startSynComunication');
+    };
+
+    function endSynComunication() {
+        event.sender.send('endSynComunication');
+    };
 };
 
 // Create menu template
@@ -110,32 +118,33 @@ const mainMenuTemplate = [{
             label: 'Comunicar Início',
             accelerator: process.platform === 'darwin' ? 'Command+Y' : 'Ctrl+I',
             click(item, focusedWindow) {
-                // focusedWindow.webContents.send('startSynComunication');
-                let msg = {
-                    username: os.userInfo().username,
-                    message: 'syncing'
-                };
-                socket.emit('messages', JSON.stringify(msg));
-                dialog.showMessageBox({
-                    title: "Informativo",
-                    message: "Notificação enviada!",
-                    buttons: ["OK"]
-                });
+                focusedWindow.webContents.send('startSynComunication');
+                // let msg = {
+                //     username: os.userInfo().username,
+                //     message: 'syncing'
+                // };
+                // socket.emit('messages', JSON.stringify(msg));
+                // dialog.showMessageBox({
+                //     title: "Informativo",
+                //     message: "Notificação enviada!",
+                //     buttons: ["OK"]
+                // });
             }
         }, {
             label: 'Comunicar Término',
             accelerator: process.platform === 'darwin' ? 'Command+Y' : 'Ctrl+F',
             click(item, focusedWindow) {
-                let msg = {
-                    username: os.userInfo().username,
-                    message: 'doneSyncing'
-                };
-                socket.emit('messages', JSON.stringify(msg));
-                dialog.showMessageBox({
-                    title: "Informativo",
-                    message: "Notificação enviada!",
-                    buttons: ["OK"]
-                });
+                focusedWindow.webContents.send('endSynComunication');
+                // let msg = {
+                //     username: os.userInfo().username,
+                //     message: 'doneSyncing'
+                // };
+                // socket.emit('messages', JSON.stringify(msg));
+                // dialog.showMessageBox({
+                //     title: "Informativo",
+                //     message: "Notificação enviada!",
+                //     buttons: ["OK"]
+                // });
             }
         }, {
             type: 'separator'

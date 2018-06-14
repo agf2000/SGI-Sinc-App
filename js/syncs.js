@@ -71,6 +71,8 @@ $(document).ready(function () {
 
         $('#syncStock').prop('checked', config.syncStock);
         $('#syncActive').prop('checked', config.syncActive);
+        $('#syncNewPeople').prop('checked', config.syncNewPeople);
+        $('#syncNewProducts').prop('checked', config.syncNewProducts);
         $('#syncNewItems').prop('checked', config.syncNewItems);
         $('#syncComission').prop('checked', config.syncComission);
         $('#syncCost').prop('checked', config.syncCost);
@@ -99,6 +101,8 @@ $(document).ready(function () {
                 syncStock: $('#syncStock').prop('checked'),
                 syncActive: $('#syncActive').prop('checked'),
                 syncNewItems: $('#syncNewItems').prop('checked'),
+                syncNewPeople: $('#syncNewPeople').prop('checked'),
+                syncNewProducts: $('#syncNewProducts').prop('checked'),
                 syncComission: $('#syncComission').prop('checked'),
                 syncCost: $('#syncCost').prop('checked'),
                 syncPrice: $('#syncPrice').prop('checked'),
