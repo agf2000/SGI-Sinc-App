@@ -12,10 +12,19 @@ const storage = eRequire('electron-json-storage');
 
 let destPath = 'c:\\softer\\Sincronizador\\config',
     dbOrigin = {},
-    dbDest = {};
+    dbDest = {},
+    config = null;
+
+var stack_topleft = {
+    "dir1": "down",
+    "dir2": "right",
+    "push": "top"
+};
 
 $(document).ready(function () {
     storage.setDataPath(destPath);
+
+    $('#syncsModal, #syncsPasswordModal').modal();
 
     $('#selectGroups').material_select();
     $('#selectCategories').material_select();
@@ -75,6 +84,8 @@ $(document).ready(function () {
         $('#syncNewProducts').prop('checked', config.syncNewProducts);
         $('#syncNewItems').prop('checked', config.syncNewItems);
         $('#syncComission').prop('checked', config.syncComission);
+        $('#canSync').prop('checked', config.canSync);
+        $('#canRep').prop('checked', config.canRep);
         $('#syncCost').prop('checked', config.syncCost);
         $('#syncPrice').prop('checked', config.syncPrice);
 
@@ -84,8 +95,6 @@ $(document).ready(function () {
         if (config.syncCategory)
             $('#selectCategories').text(config.syncCategory);
     });
-
-    $('#syncsModal, #syncsPasswordModal').modal();
 
     // Alter sync click
     $('#btnSyncs').click(function (e) {
@@ -106,8 +115,12 @@ $(document).ready(function () {
                 syncComission: $('#syncComission').prop('checked'),
                 syncCost: $('#syncCost').prop('checked'),
                 syncPrice: $('#syncPrice').prop('checked'),
+                canSync: $('#canSync').prop('checked'),
+                canRep: $('#canRep').prop('checked'),
                 syncGroup: (parseInt($('#selectGroups option:selected').val()) > 0 ? $('#selectGroups option:selected').text() : ''),
-                syncCategory: (parseInt($('#selectCategories option:selected').val()) > 0 ? $('#selectCategories').find(':selected').data('abbvr') : '')
+                syncCategory: (parseInt($('#selectCategories option:selected').val()) > 0 ? $('#selectCategories').find(':selected').data('abbvr') : ''),
+                broadServer: config.broadServer,
+                allowNoti: config.allowNoti
             };
 
             storage.set('config', params, function (error) {
@@ -135,6 +148,17 @@ $(document).ready(function () {
             $('#syncsPasswd').val(null);
         }
     });
+
+    $('#btnClose').click(function (e) {
+        if (e.clientX === 0) {
+            return false;
+        }
+        e.preventDefault();
+
+        let win = remote.getCurrentWindow();
+        win.close();
+    });
+
 });
 
 function sqlConnectGroups() {

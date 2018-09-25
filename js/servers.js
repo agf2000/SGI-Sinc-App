@@ -70,7 +70,7 @@ $(function () {
             server: $('#serverOrigin').val(),
             port: $('#portOrigin').val(),
             database: $('#dbOrigin').val(),
-            connectionTimeout: 500000,
+            connectionTimeout: 2000,
             requestTimeout: 500000,
             pool: {
                 idleTimeoutMillis: 500000,

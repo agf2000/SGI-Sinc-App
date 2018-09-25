@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Sobre o SGI Sincronizador</title>
+    <link rel="stylesheet" href="./../css/jquery.flipster.min.css">
+    <link rel="stylesheet" href="./../css/materialize.min.css">
+    <link rel="stylesheet" href="./../css/nprogress.css">
+    <link rel="stylesheet" href="./../css/pnotify.custom.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata">
+    <!--Import your style sheets here-->
+    <link rel="stylesheet" href="./../css/styles.css">
+</head>
+
+<body style="background: #546e7a !important;">
+    <div class="row">
+        <div class="col s12 m6">
+            <div class="card about">
+                <div class="card-content white-text">
+                    <span class="card-title">SGI Sincronizador</span>
+                    <p>Aplicativo multiplataforma para sincronizar dados entre bancos de dados sql do programa SGI.</p>
+                    <p>Para mais informações, entre em contato com Softek Automação Comercial pelo telefone (33)
+                        3022-4885.</p>
+                    <br />
+                    <p id="msg" class="white-text"></p>
+                </div>
+                <div class="card-action">
+                    <button id="btnUpdate" class="btn waves-effect waves-light">Atualizar</button>
+                    <button id="btnCancel" class="btn waves-effect waves-light">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var eRequire = require;
+        window.$ = window.jQuery = require('./../js/libs/jquery.min.js');
+    </script>
+    <script src="./../js/libs/hammer.min.js" onload="window.Hammer = module.exports;"></script>
+    <script src="./../js/libs//nprogress.js"></script>
+    <script src="./../js/libs/materialize.min.js"></script>
+    <script src="./../js/libs/pnotify/pnotify.custom.min.js"></script>
+    <!--Import your js scripts here  -->
+    <script src="./../js/about.js"></script>
+
+</body>
+
+</html>

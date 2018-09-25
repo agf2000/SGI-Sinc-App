@@ -31,7 +31,8 @@
  */
 
 body {
-	background: url("../img/background2.jpg") no-repeat top right fixed;
+	background: url("../img/background3.jpg") no-repeat top right fixed;
+	background-color: #0b0288;
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
 	-o-background-size: cover;
@@ -150,7 +151,7 @@ blockquote {
 }
 
 blockquote.mybq {
-	border-left: 5px solid #42A5F5 !important;
+	border-left: 5px solid #42a5f5 !important;
 }
 
 blockquote.mybq2 {
@@ -165,7 +166,8 @@ blockquote.mybq2 {
 
 .btn-div .btn {
 	height: 100px;
-	min-width: 242px;
+	min-width: 160px;
+	line-height: 20px;
 }
 
 #ulTiming {
@@ -211,4 +213,13 @@ ul.ulInline li {
 .ui-pnotify.tooltip .ui-pnotify-container {
 	background-color: #292929 !important;
 	color: #fff;
+}
+
+.error {
+	color: rgb(252, 57, 57);
+}
+
+.about {
+	background: transparent !important;
+	box-shadow: none !important;
 }

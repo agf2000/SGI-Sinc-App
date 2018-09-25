@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>SGI Sincronizador :: Configurações</title>
+    <link rel="stylesheet" href="./../css/jquery.flipster.min.css">
+    <link rel="stylesheet" href="./../css/materialize.min.css">
+    <link rel="stylesheet" href="./../css/nprogress.css">
+    <link rel="stylesheet" href="./../css/pnotify.custom.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata">
+    <!--Import your style sheets here-->
+    <link rel="stylesheet" href="./../css/styles.css">
+</head>
+
+<body style="background: none !important;">
+    <div class="container">
+        <div class="row">
+            <form>
+                <div class="col s12">
+                    <blockquote class="mybq">
+                        <h5>Configurações</h5>
+                    </blockquote>
+                    <div class="row">
+                        <div class="input-field">
+                            <input id="broadServer" type="text" class="validate">
+                            <label for="broadServer">Servidor de Notificação ex.: 127.0.0.1:3000</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="allowNoti" id="allowNoti" class="syncBoxes" />
+                            <label for="allowNoti">Ativar Notificações</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <button class="btn waves-effect waves-light modal-trigger" data-target="configPasswordModal">Salvar</button>
+                        <button id="btnCancel" class="btn waves-effect waves-light">Cancelar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Log Modal -->
+    <div class="modal" id="configPasswordModal">
+        <div class="modal-content">
+            <h5>Digite a senha para alterar configurações</h5>
+            <div class="input-field">
+
+                <input id="configPasswd" type="password" class="span3 validate" name="configPasswd">
+                <label for="configPasswd">
+                    Esta ação requer autorização do administrador do sistema.</label>
+
+            </div>
+            <p>
+                <button id="btnConfig" class="btn btn-primary" value="rep">Prosseguir</button>
+            </p>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Fechar</a>
+        </div>
+    </div>
+    <!-- /modal -->
+
+    <script>
+        var eRequire = require;
+        window.$ = window.jQuery = require('./../js/libs/jquery.min.js');
+    </script>
+
+    <script src="./../js/libs/hammer.min.js" onload="window.Hammer = module.exports;"></script>
+    <script src="./../js/libs//nprogress.js"></script>
+    <script src="./../js/libs/materialize.min.js"></script>
+    <script src="./../js/libs/pnotify/pnotify.custom.min.js"></script>
+
+    <!--Import your js scripts here  -->
+    <script src="./../js/config.js"></script>
+
+</body>
+
+</html>
