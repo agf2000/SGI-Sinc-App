@@ -223,3 +223,17 @@ ul.ulInline li {
 	background: transparent !important;
 	box-shadow: none !important;
 }
+
+.input-group {
+	display: table;
+}
+
+.input-group input,
+.suffix {
+	display: table-cell;
+}
+
+.suffix {
+	width: 1%;
+	padding-left: 10px;
+}

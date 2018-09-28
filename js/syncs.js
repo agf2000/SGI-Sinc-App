@@ -159,10 +159,30 @@ $(document).ready(function () {
         win.close();
     });
 
+    $('#btnRemoveGroup').click(function (e) {
+        if (e.clientX === 0) {
+            return false;
+        }
+        e.preventDefault();
+
+        $('#selectGroups').append($('<option value="0" data-abbvr="" selected>Escolha um Grupo</option>'));
+        $('select').material_select();
+    });
+
+    $('#btnRemoveCategory').click(function (e) {
+        if (e.clientX === 0) {
+            return false;
+        }
+        e.preventDefault();
+
+        $('#selectCategories').append($('<option value="0" data-abbvr="" selected>Escolha uma categoria</option>'));
+        $('select').material_select();
+    });
+
 });
 
 function sqlConnectGroups() {
-    new sqlDb.ConnectionPool(dbDest).connect().then(pool => {
+    new sqlDb.ConnectionPool(dbOrigin).connect().then(pool => {
         return pool.request().query('select codigo, nome from grupo')
     }).then(result => {
         let Options = '';
@@ -192,7 +212,7 @@ function sqlConnectGroups() {
 };
 
 function sqlConnectCategories() {
-    new sqlDb.ConnectionPool(dbDest).connect().then(pool => {
+    new sqlDb.ConnectionPool(dbOrigin).connect().then(pool => {
         return pool.request().query('select codigo, sigla, nome from categoria')
     }).then(result => {
         let Options = '';

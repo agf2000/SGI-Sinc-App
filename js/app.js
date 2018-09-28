@@ -686,7 +686,7 @@ $(function () {
             }).then(result => {
                 sqlDb.close();
                 if (syncNewPeople) {
-                    getPeopleS($btn);
+                    getPeople($btn);
                 } else if (syncNewProducts) {
                     getProducts($btn);
                 } else if (syncNewItems) {
@@ -1074,7 +1074,39 @@ function getProducts(btn) {
 
     // Iterating thru the list of productsTables
     _.forEach(productsTables, function (item, index) {
-        sqlGet += `select * from sinc_${item}_view; `;
+        switch (item) {
+            case 'custoproduto':
+                if (syncCost) {
+                    sqlGet += `select * from sinc_${item}_view; `;
+                } else {
+                    productsTables = productsTables.filter(e => e !== 'custoproduto');
+                }
+                break;
+            case 'produto':
+                sqlGet += `select p.* from sinc_${item}_view p `;
+
+                if (syncGroup) {
+                    sqlGet += `left outer join grupo g on g.codigo = p.grupo`;
+                }
+                if (syncCategory) {
+                    sqlGet += `left outer join categoria c on c.codigo = p.categoria`;
+                }
+
+                sqlGet += ' where 1 = 1 ';
+
+                if (syncGroup) {
+                    sqlGet += `and not isnull(g.nome, '') = '${syncGroup}' `;
+                }
+                if (syncCategory) {
+                    sqlGet += `and not isnull(c.sigla, '') = '${syncCategory}' `;
+                }
+
+                sqlGet += `order by p.data_cadastro desc; `;
+                break;
+            default:
+                sqlGet += `select * from sinc_${item}_view; `;
+                break;
+        };
     });
 
     new sqlDb.ConnectionPool(dbOrigin).connect().then(pool => {

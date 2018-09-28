@@ -8,9 +8,6 @@
     <link rel="stylesheet" href="./../css/materialize.min.css">
     <link rel="stylesheet" href="./../css/nprogress.css">
     <link rel="stylesheet" href="./../css/pnotify.custom.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata">
     <!--Import your style sheets here-->
     <link rel="stylesheet" href="./../css/styles.css">
 </head>
@@ -89,28 +86,33 @@
                     </div>
                 </div>
                 <hr />
-                <div class="h5Mod">
+                <div class="h5Mod col s12">
                     <div class="row">
                         <br />
                         <p>
                             "<b>Não</b>" sincronizar produtos ou serviços do grupo ou categoria abaixo:
                         </p>
-                        <div class="col s6">
-                            <div class="input-field col s12">
-                                <select id="selectGroups">
-                                    <option value="0" disabled selected>Escolha um grupo</option>
-                                </select>
-                                <label for="selectGroups">Grupos</label>
-                            </div>
+
+                        <div class="input-field input-group col s6">
+                            <select id="selectGroups">
+                                <option value="0" disabled selected>Escolha um grupo</option>
+                            </select> &nbsp;
+                            <label for="selectGroups">Grupos</label>
+                            <span class="suffix">
+                                <button id="btnRemoveGroup" class="btn btn-floating waves-effect waves-light red">x</button>
+                            </span>
                         </div>
-                        <div class="col s6">
-                            <div class="input-field col s12">
-                                <select id="selectCategories">
-                                    <option value="0" disabled selected>Escolha uma categoria</option>
-                                </select>
-                                <label for="selectCategories">Categorias</label>
-                            </div>
+
+                        <div class="input-field input-group col s6">
+                            <select id="selectCategories">
+                                <option value="0" disabled selected>Escolha uma categoria</option>
+                            </select> &nbsp;
+                            <label for="selectCategories">Categorias</label>
+                            <span class="suffix">
+                                <button id="btnRemoveCategory" class="btn btn-floating waves-effect waves-light red">x</button>
+                            </span>
                         </div>
+
                         <div class="input-field col s12">
                             <button class="btn waves-effect waves-light modal-trigger" data-target="syncsPasswordModal">Salvar</button>
                             <button id="btnClose" class="btn waves-effect waves-light">Cancelar</button>

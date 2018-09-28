@@ -6,8 +6,8 @@ const {
     ipcMain
 } = electron;
 const path = require('path');
-const fse = require('fs-extra');
-const destPath = 'c:\\softer\\config';
+// const fse = require('fs-extra');
+// const destPath = 'c:\\softer\\config';
 const devToolsInstaller = require('electron-devtools-installer');
 const {
     autoUpdater
@@ -18,27 +18,26 @@ let mainWindow = null,
     serversWindow = null,
     tablesWindow = null,
     syncsWindow = null,
-    configWindow = null,
-    onlineStatusWindow = null;
+    configWindow = null;
 
 // configure logging
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
 log.info('App starting...');
 
-const io = require('socket.io-client');
+// const io = require('socket.io-client');
 
-let socket = io("http://softersgi.dnns.com.br:3000");
+// let socket = io("http://softersgi.dnns.com.br:3000");
 
-fse.readFile(`${destPath}\\config.json`, function (err, data) {
-    if (err) {
-        return console.log(err);
-    }
-    let fileRead = fse.readFileSync(`${destPath}\\config.json`, 'utf8');
-    config = JSON.parse(fileRead);
+// fse.readFile(`${destPath}\\config.json`, function (err, data) {
+//     if (err) {
+//         return console.log(err);
+//     }
+//     let fileRead = fse.readFileSync(`${destPath}\\config.json`, 'utf8');
+//     config = JSON.parse(fileRead);
 
-    socket = io(config.broadServer);
-});
+//     socket = io(config.broadServer);
+// });
 
 // Listen for the app to be ready
 function createWindow() {
@@ -424,7 +423,7 @@ function openSyncsWindow() {
         parent: mainWindow,
         fullscreenable: false,
         width: 660,
-        height: 520,
+        height: 540,
         autoHideMenuBar: true,
         icon: path.join(__dirname, 'build/icon.ico')
     });
